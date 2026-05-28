@@ -44,7 +44,7 @@ const ProductList: FC = () => {
   const reprintRef = useRef<HTMLDivElement>(null);
 
   const triggerReprintPrint = useReactToPrint({
-    content: () => reprintRef.current,
+    contentRef: reprintRef,
   });
 
   const handleReprintLast = async () => {
