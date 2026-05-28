@@ -1,0 +1,227 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+  backdrop-filter: blur(5px);
+}
+
+.modal {
+  width: 750px;
+  max-width: 95%;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  padding: 24px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 12px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  gap: 24px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.scannerContainer {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cameraFrame {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  position: relative;
+  overflow: hidden;
+  border: 4px solid;
+  border-radius: 8px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+  background-color: #000;
+}
+
+.cameraFrame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.laserLine {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  width: 90%;
+  height: 3px;
+  background-color: #ff3333;
+  box-shadow: 0 0 10px #ff3333, 0 0 20px #ff3333;
+  animation: laserScan 2s infinite ease-in-out;
+  z-index: 10;
+  pointer-events: none;
+}
+
+@keyframes laserScan {
+  0% {
+    top: 15%;
+  }
+  50% {
+    top: 85%;
+  }
+  100% {
+    top: 15%;
+  }
+}
+
+.instruction {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.8;
+  text-align: center;
+}
+
+.sidebar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+}
+
+.checkboxLabel input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.statusContainer {
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.statusContainer h4 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.scannedCode {
+  margin: 0;
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  padding: 10px;
+  border-radius: 6px;
+  letter-spacing: 1px;
+}
+
+.cooldownText {
+  margin: 4px 0 0 0;
+  font-size: 11px;
+  color: #ff9800;
+  font-weight: 500;
+  text-align: center;
+}
+
+.historySection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.historySection h4 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.historyList {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.emptyHistory {
+  font-size: 12px;
+  opacity: 0.6;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.historyItem {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 4px;
+}
+
+.itemTitle {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.itemMeta {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 15px;
+}
