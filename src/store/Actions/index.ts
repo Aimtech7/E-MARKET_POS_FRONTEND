@@ -133,6 +133,12 @@ export const set_products = (data: any[]) => {
       category: p.productCategory,
       unitOfMeasure: p.unitOfMeasure,
       price: p.productPrice,
+      stockQuantity: p.stockQuantity,
+      reorderLevel: p.reorderLevel,
+      expiryDate: p.expiryDate,
+      batchNumber: p.batchNumber,
+      sku: p.sku,
+      barcode: p.barcode,
     } as Product;
   });
   return {
