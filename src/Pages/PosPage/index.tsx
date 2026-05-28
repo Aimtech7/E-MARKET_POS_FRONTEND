@@ -4,6 +4,7 @@ import Aside from "../../Components/Aside";
 import axios from "axios";
 import { set_categories, set_products, set_units } from "../../store/Actions";
 import { useDispatch } from "react-redux";
+import { useHardwareScanner } from "../../utils/useHardwareScanner";
 
 /**
  * ## POS Page
@@ -21,6 +22,8 @@ import { useDispatch } from "react-redux";
  */
 const PosPage: FC = () => {
   const dispatch = useDispatch();
+  useHardwareScanner(); // Mount hardware scanning hook
+
   useEffect(() => {
     axios
       .get("http://localhost:5500/category/categories")
