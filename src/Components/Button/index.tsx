@@ -7,7 +7,8 @@ interface props extends PropsWithChildren {
   onClick?: MouseEventHandler<HTMLButtonElement>;
   fullWidth?: boolean;
   className?:string;
-  type?:"reset" | 'button' | 'submit'
+  type?:"reset" | 'button' | 'submit';
+  disabled?: boolean;
 }
 const Button: FC<props> = ({
   children,
@@ -16,7 +17,8 @@ const Button: FC<props> = ({
   onClick,
   type= 'button',
   fullWidth = false,
-  className
+  className,
+  disabled = false,
 }) => {
   const theme = useTheme();
   const styles = {
@@ -25,6 +27,8 @@ const Button: FC<props> = ({
     padding: "0.7em 1em",
     color: theme.palette.textAction,
     boxShadow: " 0 2px 4px" + theme.palette.shadow,
+    opacity: disabled ? 0.6 : 1,
+    cursor: disabled ? "not-allowed" : "pointer",
   };
   if (variant === "primary") styles.backgroundColor = theme.palette.primary;
   else if (variant === "secondary")
@@ -37,7 +41,7 @@ const Button: FC<props> = ({
   else styles.padding = "0.7em 1em";
   if (fullWidth) styles.width = "100%";
   return (
-    <button type={type} className={style.btn +" " + className} onClick={onClick} style={styles}>
+    <button type={type} className={style.btn +" " + className} onClick={onClick} style={styles} disabled={disabled}>
       {children}
     </button>
   );
