@@ -25,7 +25,7 @@ const ReceiptHistoryModal: FC<ReceiptHistoryModalProps> = ({ isOpen, onClose }) 
   const printComponentRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = useReactToPrint({
-    content: () => printComponentRef.current,
+    contentRef: printComponentRef,
   });
 
   const fetchInvoices = async () => {
