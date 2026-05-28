@@ -37,3 +37,14 @@ interface ResponseResult {
   message: string;
   status: number;
 }
+interface Invoice {
+  _id?: string;
+  invoiceNumber: string;
+  cart: Cart;
+  cashier: string;
+  amountPaid: number;
+  changeGiven: number;
+  paymentMethod: string;
+  timestamp: string;
+  pdfPath?: string;
+}

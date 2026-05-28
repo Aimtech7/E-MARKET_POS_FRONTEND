@@ -1,5 +1,6 @@
-import React, { ChangeEvent, FC, useState } from "react";
+import React, { ChangeEvent, FC, useState, useRef } from "react";
 import Card from "../Card";
+import Button from "../Button";
 import style from "./style.module.css";
 import SearchField from "../SearchField";
 import useTheme from "../../context/Theme/useTheme";
@@ -9,6 +10,12 @@ import { faTableCells, faTableList } from "@fortawesome/free-solid-svg-icons";
 import ProductRow from "../ProductRow";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/Reducers";
+import { useCookies } from "react-cookie";
+import { useReactToPrint } from "react-to-print";
+import axios from "axios";
+import useSnackbar from "../../context/Snackbar/useSnackbar";
+import { PrintableInvoice } from "../PrintableInvoice";
+import ReceiptHistoryModal from "../ReceiptHistoryModal";
 
 const ProductList: FC = () => {
   const productsReducer = useSelector<RootState>(
@@ -27,6 +34,39 @@ const ProductList: FC = () => {
     category: "all",
     unitOfMeasure: "all",
   });
+
+  const [cookies] = useCookies();
+  const snackbar = useSnackbar();
+  const [isHistoryOpen, setIsHistoryOpen] = useState<boolean>(false);
+  const [reprintInvoice, setReprintInvoice] = useState<Invoice | null>(null);
+  const reprintRef = useRef<HTMLDivElement>(null);
+
+  const triggerReprintPrint = useReactToPrint({
+    content: () => reprintRef.current,
+  });
+
+  const handleReprintLast = async () => {
+    const token = cookies.auth?.token;
+    try {
+      const res = await axios.get("http://localhost:5500/invoice", {
+        headers: { Authorization: "barear " + token },
+      });
+      if (res.data && res.data.length > 0) {
+        const latestInvoice = res.data[0];
+        setReprintInvoice(latestInvoice);
+        setTimeout(() => {
+          triggerReprintPrint();
+        }, 150);
+      } else {
+        snackbar.onResponse({ message: "No past transactions available to reprint.", status: 404 });
+      }
+    } catch (err: any) {
+      snackbar.onResponse({
+        message: err.response?.data?.message || "Failed to fetch latest invoice.",
+        status: err.response?.status || 500,
+      });
+    }
+  };
 
   // Search filters applied when the search value changed or the filtersValues changed
   let items: Product[] = [...productsReducer].filter(
@@ -99,6 +139,12 @@ const ProductList: FC = () => {
             return {key:p.unitOfMeasureName, value:p.unitOfMeasureName}
           })]}
         />
+        <Button onClick={() => setIsHistoryOpen(true)} variant="secondary" className={style.controlBtn}>
+          Receipt History
+        </Button>
+        <Button onClick={handleReprintLast} variant="warning" className={style.controlBtn}>
+          Reprint Last
+        </Button>
       </div>
       <div className={style.productList}>
         {items.map((p) => {
@@ -123,6 +169,12 @@ const ProductList: FC = () => {
             />
           );
         })}
+      </div>
+      <ReceiptHistoryModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
+      <div style={{ display: "none" }}>
+        {reprintInvoice && (
+          <PrintableInvoice ref={reprintRef} invoice={reprintInvoice} />
+        )}
       </div>
     </div>
   );

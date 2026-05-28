@@ -22,6 +22,7 @@ import {
 import Input from "../Input";
 import axios from "axios";
 import useSnackbar from "../../context/Snackbar/useSnackbar";
+import ReceiptModal from "../ReceiptModal";
 
 const headings = [
   { key: "id", title: "product" },
@@ -44,6 +45,7 @@ const SingleCart: FC<props> = ({ onClick, orderId, onRemoveOrder }) => {
     status: "",
   });
   const [searchValue, setSearchValue] = useState<string>("");
+  const [isReceiptOpen, setIsReceiptOpen] = useState<boolean>(false);
 
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -170,29 +172,7 @@ const SingleCart: FC<props> = ({ onClick, orderId, onRemoveOrder }) => {
       </div>
       <Formik
         onSubmit={() => {
-          axios
-            .post("http://localhost:5500/cart/check", {
-              description: cart.description,
-              tax: cart.tax,
-              discount: cart.discount,
-              products: cart.products.map((p) => {
-                return { product: p.id, qty: p.qty };
-              }),
-            })
-            .then((res) => {
-              snackbar.onResponse({
-                message: res.data.message,
-                status: res.status,
-              });
-              onRemoveOrder();
-              dispatch(checkCart(orderId));
-            })
-            .catch((err) => {
-              snackbar.onResponse({
-                message: err.response.data.message,
-                status: err.response.status,
-              });
-            });
+          setIsReceiptOpen(true);
         }}
         initialValues={{ description: cart? cart.description : ""}}
       >
@@ -298,6 +278,15 @@ const SingleCart: FC<props> = ({ onClick, orderId, onRemoveOrder }) => {
           </div>
         </Form>
       </Formik>
+      <ReceiptModal
+        cart={cart}
+        isOpen={isReceiptOpen}
+        onClose={() => setIsReceiptOpen(false)}
+        onSuccess={() => {
+          onRemoveOrder();
+          dispatch(checkCart(orderId));
+        }}
+      />
     </div>
   );
 };

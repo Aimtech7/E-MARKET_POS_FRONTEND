@@ -1,0 +1,115 @@
+.ticket {
+  width: 280px;
+  max-width: 280px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  color: #000000;
+  padding: 10px;
+  margin: 0 auto;
+  background-color: #ffffff;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 16px;
+  margin: 0 0 2px 0;
+  font-weight: bold;
+}
+
+.subtitle {
+  font-size: 10px;
+  margin: 0 0 5px 0;
+}
+
+.header p {
+  margin: 2px 0;
+}
+
+.separator {
+  border-top: 1px dashed #000000;
+  margin: 8px 0;
+  height: 0;
+}
+
+.info p {
+  margin: 4px 0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 5px 0;
+}
+
+.table th {
+  font-weight: bold;
+  border-bottom: 1px solid #000000;
+  padding-bottom: 4px;
+  font-size: 10px;
+}
+
+.table td {
+  padding: 4px 0;
+  vertical-align: top;
+  font-size: 10px;
+}
+
+.unit {
+  font-size: 8px;
+  color: #555555;
+}
+
+.leftAlign {
+  text-align: left;
+}
+
+.centerAlign {
+  text-align: center;
+}
+
+.rightAlign {
+  text-align: right;
+}
+
+.totals {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin: 3px 0;
+}
+
+.bold {
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.footer {
+  text-align: center;
+  font-size: 9px;
+  margin-top: 10px;
+}
+
+.footer p {
+  margin: 3px 0;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .ticket, .ticket * {
+    visibility: visible;
+  }
+  .ticket {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
