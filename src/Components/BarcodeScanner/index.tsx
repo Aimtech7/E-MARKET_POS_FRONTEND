@@ -95,7 +95,7 @@ const BarcodeScanner: FC<BarcodeScannerProps> = ({ isOpen, onClose }) => {
               <BarcodeScannerComponent
                 width="100%"
                 height="100%"
-                onUpdate={(err, result) => {
+                onUpdate={(err: any, result: any) => {
                   if (result) {
                     handleScan(result.getText());
                   }
