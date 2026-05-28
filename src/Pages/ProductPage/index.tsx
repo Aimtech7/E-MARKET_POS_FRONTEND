@@ -112,6 +112,9 @@ const ProductPage: FC = () => {
     formData.append("productCategory", values.category);
     formData.append("unitOfMeasure", values.unit);
     formData.append("productPrice", values.price);
+    if (values.sku) formData.append("sku", values.sku);
+    if (values.barcode) formData.append("barcode", values.barcode);
+    if (values.reorderLevel !== undefined) formData.append("reorderLevel", values.reorderLevel);
     formData.append("image", values.image.img);
 
     if (submitAction === "add") {
@@ -127,6 +130,9 @@ const ProductPage: FC = () => {
               id: res.data.id,
               title: values.title,
               price: values.price,
+              sku: res.data.product?.sku,
+              barcode: res.data.product?.barcode,
+              reorderLevel: res.data.product?.reorderLevel,
               category: { categoryName: values.category } as Category,
               media: values.image.preview,
               unitOfMeasure: unitOfMeasures.find(
@@ -154,6 +160,9 @@ const ProductPage: FC = () => {
               id: values.id,
               title: values.title,
               price: values.price,
+              sku: values.sku,
+              barcode: values.barcode,
+              reorderLevel: values.reorderLevel,
               category: { categoryName: values.category } as Category,
               media: values.image.preview,
               unitOfMeasure: unitOfMeasures.find(
@@ -268,6 +277,9 @@ const ProductPage: FC = () => {
               ? unitOfMeasures[0].unitOfMeasureName
               : "",
             price: selectedItem ? selectedItem.price : 0.99,
+            sku: selectedItem ? selectedItem.sku || "" : "",
+            barcode: selectedItem ? selectedItem.barcode || "" : "",
+            reorderLevel: selectedItem ? selectedItem.reorderLevel || 5 : 5,
             image: { preview: selectedItem?.media, img: selectedItem?.media },
           }}
         >
@@ -277,6 +289,11 @@ const ProductPage: FC = () => {
               style={{ color: theme.palette.textPrimary }}
             >
               <h1>{selectedItem?.id ? "#" + selectedItem.id : "PRODUCT"}</h1>
+              {selectedItem?.id && (
+                <div style={{ textAlign: "center", marginBottom: "10px" }}>
+                  <img src={`http://localhost:5500/product/${selectedItem.id}/barcode`} alt="Product Barcode" style={{ maxWidth: "100%", height: "auto" }} />
+                </div>
+              )}
               <ImagePicker name="image" />
               <TextField
                 placeholder="Enter Product Name"
@@ -288,6 +305,22 @@ const ProductPage: FC = () => {
                 width="100%"
                 type="number"
                 name="price"
+              />
+              <TextField
+                placeholder="SKU (Auto-generated if blank)"
+                width="100%"
+                name="sku"
+              />
+              <TextField
+                placeholder="Barcode (Auto-generated if blank)"
+                width="100%"
+                name="barcode"
+              />
+              <TextField
+                placeholder="Reorder Level"
+                width="100%"
+                type="number"
+                name="reorderLevel"
               />
               <SelectField
                 width="100%"

@@ -24,6 +24,9 @@ export const productShcema = yup.object().shape({
   category: yup.string().required("This Field is required"),
   price: yup.number().required("This Field is required"),
   unit: yup.string().required("This Field is required"),
+  sku: yup.string(),
+  barcode: yup.string(),
+  reorderLevel: yup.number().min(0, "Reorder level must be 0 or greater"),
 });
 
 export const userSchema = yup.object().shape({
