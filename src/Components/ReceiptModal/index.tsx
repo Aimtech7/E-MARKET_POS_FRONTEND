@@ -55,7 +55,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
   }, [amountPaid, finalTotal]);
 
   const handlePrint = useReactToPrint({
-    content: () => printComponentRef.current,
+    contentRef: printComponentRef,
   });
 
   const handleCompletePayment = async () => {
