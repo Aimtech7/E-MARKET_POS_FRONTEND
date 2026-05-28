@@ -7,7 +7,7 @@ import Button from "../../Components/Button";
 import Input from "../../Components/Input";
 import style from "./style.module.css";
 
-type Tab = "stock" | "suppliers" | "po";
+type Tab = "stock" | "history" | "suppliers" | "po";
 
 const InventoryPage: FC = () => {
   const [cookies] = useCookies();
@@ -16,6 +16,7 @@ const InventoryPage: FC = () => {
 
   const [activeTab, setActiveTab] = useState<Tab>("stock");
   const [products, setProducts] = useState<any[]>([]);
+  const [inventoryLogs, setInventoryLogs] = useState<any[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -53,6 +54,18 @@ const InventoryPage: FC = () => {
     }
   };
 
+  const fetchInventoryLogs = async () => {
+    const token = cookies.auth?.token;
+    try {
+      const res = await axios.get("http://localhost:5500/inventory/logs", {
+        headers: { Authorization: "barear " + token },
+      });
+      setInventoryLogs(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const fetchSuppliers = async () => {
     const token = cookies.auth?.token;
     try {
@@ -79,6 +92,7 @@ const InventoryPage: FC = () => {
 
   useEffect(() => {
     fetchProducts();
+    fetchInventoryLogs();
     fetchSuppliers();
     fetchPOs();
   }, [cookies.auth?.token]);
@@ -283,6 +297,13 @@ const InventoryPage: FC = () => {
             Stock Levels & Alerts
           </button>
           <button
+            onClick={() => setActiveTab("history")}
+            className={`${style.tabBtn} ${activeTab === "history" ? style.activeTab : ""}`}
+            style={{ color: theme.palette.textPrimary }}
+          >
+            Inventory History
+          </button>
+          <button
             onClick={() => setActiveTab("suppliers")}
             className={`${style.tabBtn} ${activeTab === "suppliers" ? style.activeTab : ""}`}
             style={{ color: theme.palette.textPrimary }}
@@ -359,6 +380,59 @@ const InventoryPage: FC = () => {
                             Adjust Stock
                           </button>
                         </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Inventory History */}
+      {activeTab === "history" && (
+        <div className={style.body}>
+          <div className={style.subHeader}>
+            <h3>Inventory Audit Logs</h3>
+            <p className={style.subHeaderInfo}>Immutable record of every physical stock movement (Sales, Restocks, Refunds, Adjustments).</p>
+          </div>
+
+          <div className={style.tableWrapper}>
+            {inventoryLogs.length === 0 ? (
+              <p className={style.empty}>No inventory history available.</p>
+            ) : (
+              <table className={style.table}>
+                <thead>
+                  <tr style={{ color: theme.palette.textSecondary }}>
+                    <th>Timestamp</th>
+                    <th>Product</th>
+                    <th>Action Type</th>
+                    <th>Quantity Affected</th>
+                    <th>Reason / Note</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {inventoryLogs.map((log) => {
+                    let color = theme.palette.textPrimary;
+                    if (log.type === "restock" || log.type === "refund") color = "#2ecc71"; // Green for additions
+                    else if (log.type === "sale" || log.type === "expiry_void") color = "#e74c3c"; // Red for deductions
+                    else if (log.type === "adjustment") color = log.qty > 0 ? "#2ecc71" : "#e74c3c";
+
+                    return (
+                      <tr key={log._id} style={{ borderBottom: `1px solid ${theme.palette.secondary}22` }}>
+                        <td>{new Date(log.timestamp).toLocaleString()}</td>
+                        <td className={style.bold}>{log.product?.productName || "Unknown Product"}</td>
+                        <td>
+                          <span style={{ fontWeight: "bold", textTransform: "capitalize", color }}>
+                            {log.type}
+                          </span>
+                        </td>
+                        <td style={{ color, fontWeight: "bold" }}>
+                          {(log.type === "restock" || log.type === "refund" || (log.type === "adjustment" && log.qty > 0)) ? "+" : ""}
+                          {log.qty}
+                        </td>
+                        <td>{log.reason || "-"}</td>
                       </tr>
                     );
                   })}
