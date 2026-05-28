@@ -16,6 +16,7 @@ import axios from "axios";
 import useSnackbar from "../../context/Snackbar/useSnackbar";
 import { PrintableInvoice } from "../PrintableInvoice";
 import ReceiptHistoryModal from "../ReceiptHistoryModal";
+import BarcodeScanner from "../BarcodeScanner";
 
 const ProductList: FC = () => {
   const productsReducer = useSelector<RootState>(
@@ -38,6 +39,7 @@ const ProductList: FC = () => {
   const [cookies] = useCookies();
   const snackbar = useSnackbar();
   const [isHistoryOpen, setIsHistoryOpen] = useState<boolean>(false);
+  const [isScannerOpen, setIsScannerOpen] = useState<boolean>(false);
   const [reprintInvoice, setReprintInvoice] = useState<Invoice | null>(null);
   const reprintRef = useRef<HTMLDivElement>(null);
 
@@ -139,6 +141,9 @@ const ProductList: FC = () => {
             return {key:p.unitOfMeasureName, value:p.unitOfMeasureName}
           })]}
         />
+        <Button onClick={() => setIsScannerOpen(true)} variant="primary" className={style.controlBtn}>
+          Camera Scanner
+        </Button>
         <Button onClick={() => setIsHistoryOpen(true)} variant="secondary" className={style.controlBtn}>
           Receipt History
         </Button>
@@ -171,6 +176,7 @@ const ProductList: FC = () => {
         })}
       </div>
       <ReceiptHistoryModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
+      <BarcodeScanner isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
       <div style={{ display: "none" }}>
         {reprintInvoice && (
           <PrintableInvoice ref={reprintRef} invoice={reprintInvoice} />
