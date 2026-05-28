@@ -1,0 +1,408 @@
+.container {
+  width: 95%;
+  margin: 1em auto;
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.tabBtn {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  opacity: 0.7;
+  transition: all 0.2s;
+}
+
+.tabBtn:hover {
+  opacity: 1;
+}
+
+.activeTab {
+  border-bottom-color: #d32f2f;
+  opacity: 1;
+}
+
+.divider {
+  height: 1px;
+  width: 100%;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.subHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.subHeader h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.subHeaderInfo {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 50px 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+}
+
+.table td {
+  padding: 12px;
+  vertical-align: middle;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.price {
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.lowText {
+  color: #c62828;
+  font-weight: bold;
+}
+
+.alertBadge {
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.alertBadge.out {
+  background-color: rgba(198, 40, 40, 0.15);
+  color: #c62828;
+}
+
+.alertBadge.low {
+  background-color: rgba(239, 108, 0, 0.15);
+  color: #ef6c00;
+}
+
+.alertBadge.good {
+  background-color: rgba(46, 125, 50, 0.15);
+  color: #2e7d32;
+}
+
+.adjustBtn {
+  background: none;
+  border: 1px solid;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.adjustBtn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Suppliers Layout */
+.suppliersGrid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.suppliersList {
+  flex: 2;
+  min-width: 300px;
+}
+
+.supplierFormCard {
+  flex: 1;
+  min-width: 250px;
+  padding: 20px;
+  border-radius: 6px;
+}
+
+.suppliersList h3, .supplierFormCard h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.contactDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formGroup label {
+  font-size: 11px;
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+.deleteBtn {
+  background: none;
+  border: 1px solid #c62828;
+  color: #c62828;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.deleteBtn:hover {
+  background-color: rgba(198, 40, 40, 0.05);
+}
+
+/* PO Badges */
+.poBadge {
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.poBadge.Draft { background-color: #eeeeee; color: #555555; }
+.poBadge.Ordered { background-color: #e3f2fd; color: #1565c0; }
+.poBadge.Received { background-color: #e8f5e9; color: #2e7d32; }
+.poBadge.Cancelled { background-color: #ffebee; color: #c62828; }
+
+.poActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.poActions button {
+  border: none;
+  padding: 6px 12px;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 11px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.orderedBtn { background-color: #1565c0; }
+.receivedBtn { background-color: #2e7d32; }
+.cancelBtn { background-color: #c62828; }
+
+.disabledText {
+  opacity: 0.5;
+  font-size: 11px;
+}
+
+/* Modal overlays */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  width: 450px;
+  max-width: 90%;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.modalSubText {
+  font-size: 11px;
+  opacity: 0.7;
+  margin: 0 0 15px 0;
+}
+
+.currentStockDisplay {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  margin-bottom: 15px;
+}
+
+.modalActions {
+  margin-top: 20px;
+}
+
+/* PO Form Styling */
+.select {
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  outline: none;
+  border: 1px solid;
+  width: 100%;
+}
+
+.poItemsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 5px;
+}
+
+.poItemsHeader h4 {
+  margin: 0;
+  font-size: 13px;
+}
+
+.addBtn {
+  background: none;
+  border: none;
+  color: #1565c0;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.poItemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.poItemRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.dateInput {
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  outline: none;
+  border: 1px solid;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #c62828;
+  cursor: pointer;
+}
+
+.poSummary {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: rgba(46, 125, 50, 0.1);
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 14px;
+}

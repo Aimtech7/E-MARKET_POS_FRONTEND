@@ -13,6 +13,10 @@ interface Product {
   price: number;
   category: Category;
   unitOfMeasure: UnitOfMeasure;
+  stockQuantity: number;
+  reorderLevel: number;
+  expiryDate?: string;
+  batchNumber?: string;
 }
 interface CartCeil extends Product{
   qty:number;
@@ -47,4 +51,26 @@ interface Invoice {
   paymentMethod: string;
   timestamp: string;
   pdfPath?: string;
+}
+interface Supplier {
+  _id: string;
+  supplierName: string;
+  contactName?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+}
+interface PurchaseOrderItem {
+  product: Product;
+  qty: number;
+  price: number;
+}
+interface PurchaseOrder {
+  _id: string;
+  poNumber: string;
+  supplier: Supplier;
+  items: PurchaseOrderItem[];
+  status: "Draft" | "Ordered" | "Received" | "Cancelled";
+  totalAmount: number;
+  timestamp: string;
 }
