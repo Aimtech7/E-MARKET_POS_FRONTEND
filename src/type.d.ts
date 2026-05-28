@@ -17,6 +17,8 @@ interface Product {
   reorderLevel: number;
   expiryDate?: string;
   batchNumber?: string;
+  sku?: string;
+  barcode?: string;
 }
 interface CartCeil extends Product{
   qty:number;
