@@ -10,6 +10,7 @@ import {
   faSignOut,
   faTag,
   faUser,
+  faChartLine,
 } from "@fortawesome/free-solid-svg-icons";
 import style from "./style.module.css";
 const Navbar: FC = () => {
@@ -36,6 +37,9 @@ const Navbar: FC = () => {
       </Link>
       <Link to={"/dashboard"} title="dashboard">
         <FontAwesomeIcon className={style.link} icon={faGears} color="white" />
+      </Link>
+      <Link to={"/sales-history"} title="sales history">
+        <FontAwesomeIcon className={style.link} icon={faChartLine} color="white" />
       </Link>
       <Link to={"/logout"} title="logout">
         <FontAwesomeIcon className={style.link} icon={faSignOut} color="white" />

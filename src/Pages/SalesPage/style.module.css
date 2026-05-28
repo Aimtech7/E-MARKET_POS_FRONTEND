@@ -1,0 +1,303 @@
+.container {
+  width: 95%;
+  margin: 1em auto;
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.headerActions {
+  display: flex;
+  gap: 10px;
+}
+
+.analyticsGrid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.card {
+  flex: 1;
+  min-width: 250px;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.card h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.statValue {
+  margin: 0;
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.filters {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  background-color: rgba(0, 0, 0, 0.02);
+  padding: 15px;
+  border-radius: 6px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 160px;
+}
+
+.filterGroup label {
+  font-size: 11px;
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+.select, .dateInput {
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  outline: none;
+  border: 1px solid;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 50px 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+}
+
+.table td {
+  padding: 12px;
+  vertical-align: middle;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.badge.sale {
+  background-color: rgba(46, 125, 50, 0.15);
+  color: #2e7d32;
+}
+
+.badge.refund {
+  background-color: rgba(198, 40, 40, 0.15);
+  color: #c62828;
+}
+
+.amount.sale {
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.amount.refund {
+  color: #c62828;
+  font-weight: bold;
+}
+
+.refundBtn {
+  background: none;
+  border: 1px solid;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.refundBtn:hover {
+  background-color: rgba(198, 40, 40, 0.05);
+}
+
+.disabledText {
+  opacity: 0.5;
+  font-size: 11px;
+}
+
+/* Modal Styling */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  width: 500px;
+  max-width: 90%;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  padding: 20px;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.modalSubText {
+  font-size: 12px;
+  opacity: 0.7;
+  margin: 0 0 15px 0;
+}
+
+.refundList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.refundRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.rowProductInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.rowSubText {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.rowQtyActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.qtyBtn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.qtyVal {
+  font-weight: bold;
+  font-size: 14px;
+  min-width: 15px;
+  text-align: center;
+}
+
+.modalActions {
+  margin-top: 20px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .container, .container * {
+    visibility: visible;
+  }
+  .headerActions, .filters, .table td:last-child, .table th:last-child {
+    display: none !important;
+  }
+  .container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+  }
+}
