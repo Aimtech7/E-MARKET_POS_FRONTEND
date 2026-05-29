@@ -26,7 +26,8 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
   const [amountPaid, setAmountPaid] = useState<number>(0);
   const [changeGiven, setChangeGiven] = useState<number>(0);
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [invoice, setInvoice] = useState<Invoice | null>(null);
+  const [invoice, setInvoice] = useState<any>(null);
+  const [receipt, setReceipt] = useState<any>(null);
 
   const printComponentRef = useRef<HTMLDivElement>(null);
 
@@ -150,22 +151,26 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
         }
       );
 
+      // 3. Create the Receipt
+      const resReceipt = await axios.post(
+        "http://localhost:5500/receipt",
+        {
+          invoiceId: resInvoice.data.invoice._id,
+          customer: "Walk-in",
+        },
+        {
+          headers: { Authorization: "barear " + token },
+        }
+      );
+
       // Successfully processed invoice
       snackbar.onResponse({
-        message: "Transaction completed successfully.",
+        message: "Transaction and Receipt completed successfully.",
         status: 201,
       });
 
-      // Populate full invoice object with the cart products
-      const populatedInvoice: Invoice = {
-        ...resInvoice.data.invoice,
-        cart: {
-          ...cart,
-          products: cart.products,
-        },
-      };
-
-      setInvoice(populatedInvoice);
+      setReceipt(resReceipt.data.receipt);
+      setInvoice(resInvoice.data.invoice);
       setStep("receipt");
     } catch (err: any) {
       snackbar.onResponse({
@@ -183,9 +188,8 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
   };
 
   const handleDownloadPDF = () => {
-    if (invoice && invoice._id) {
-      // Trigger dynamic browser download of generated PDF
-      window.open(`http://localhost:5500/uploads/invoices/${invoice.invoiceNumber}.pdf`, "_blank");
+    if (receipt && receipt.receiptNumber) {
+      window.open(`http://localhost:5500/uploads/receipts/${receipt.receiptNumber}.pdf`, "_blank");
     }
   };
 
@@ -267,8 +271,72 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
           </div>
         ) : (
           <div className={style.body}>
-            <div className={style.previewContainer}>
-              {invoice && <PrintableInvoice ref={printComponentRef} invoice={invoice} />}
+            <div className={style.previewContainer} style={{ background: "#f0f0f0", padding: "20px", display: "flex", justifyContent: "center" }}>
+              {receipt && (
+                <div style={{ background: "white", padding: "15px", width: "300px", color: "black", fontFamily: "monospace", fontSize: "12px" }} ref={printComponentRef}>
+                  <div style={{ textAlign: "center" }}>
+                    <h3 style={{ margin: "0 0 5px 0" }}>EMMARKET SUPERMARKET</h3>
+                    <p style={{ margin: "2px 0" }}>123 Market Street, Cityville</p>
+                    <p style={{ margin: "2px 0" }}>Tel: +123-456-7890</p>
+                  </div>
+                  <div style={{ marginTop: "10px" }}>
+                    <p style={{ margin: "2px 0" }}>Receipt #: {receipt.receiptNumber}</p>
+                    <p style={{ margin: "2px 0" }}>Date: {new Date(receipt.timestamp).toLocaleString()}</p>
+                    <p style={{ margin: "2px 0" }}>Cashier: {receipt.cashier}</p>
+                  </div>
+                  <div style={{ margin: "5px 0" }}>------------------------------------------</div>
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr>
+                        <th style={{ textAlign: "left" }}>Item</th>
+                        <th style={{ textAlign: "center" }}>Qty</th>
+                        <th style={{ textAlign: "right" }}>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {receipt.items.map((item: any, idx: number) => (
+                        <tr key={idx}>
+                          <td style={{ textAlign: "left" }}>{item.productName.substring(0, 15)}</td>
+                          <td style={{ textAlign: "center" }}>{item.qty}</td>
+                          <td style={{ textAlign: "right" }}>${(item.qty * item.unitPrice).toFixed(2)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div style={{ margin: "5px 0" }}>------------------------------------------</div>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span>Subtotal:</span>
+                    <span>${receipt.subtotal.toFixed(2)}</span>
+                  </div>
+                  {receipt.tax > 0 && (
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span>Tax:</span>
+                      <span>+${receipt.tax.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {receipt.discount > 0 && (
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span>Discount:</span>
+                      <span>-${receipt.discount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold", marginTop: "5px" }}>
+                    <span>TOTAL:</span>
+                    <span>${receipt.grandTotal.toFixed(2)}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "5px" }}>
+                    <span>Paid ({receipt.paymentMethod}):</span>
+                    <span>${receipt.amountPaid.toFixed(2)}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span>Change:</span>
+                    <span>${receipt.changeGiven.toFixed(2)}</span>
+                  </div>
+                  <div style={{ textAlign: "center", marginTop: "10px", fontSize: "11px" }}>
+                    <p style={{ margin: "2px 0" }}>Thank you for shopping with us!</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className={style.actions}>

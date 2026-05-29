@@ -1,0 +1,58 @@
+.container {
+  padding: 20px 40px;
+  min-height: 100%;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.subInfo {
+  margin: 5px 0 0 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.tableWrapper {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+.table th {
+  font-weight: 500;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  font-size: 14px;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #666;
+}

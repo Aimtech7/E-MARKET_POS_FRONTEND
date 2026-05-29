@@ -13,6 +13,7 @@ import Dashboard from "./Pages/Dashboard";
 import Logout from "./Pages/Logout";
 import SalesPage from "./Pages/SalesPage";
 import InventoryPage from "./Pages/InventoryPage";
+import ReceiptPage from "./Pages/ReceiptPage";
 
 const Router: FC = () => {
   return (
@@ -85,6 +86,16 @@ const Router: FC = () => {
             <Guard>
               <Layout>
                 <SalesPage />
+              </Layout>
+            </Guard>
+          }
+        ></Route>
+        <Route
+          path="/receipts"
+          element={
+            <Guard>
+              <Layout>
+                <ReceiptPage />
               </Layout>
             </Guard>
           }

@@ -1,0 +1,157 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal {
+  width: 400px;
+  max-width: 90%;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h2 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.previewContainer {
+  background: #f0f0f0;
+  padding: 20px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.receiptWrapper {
+  background: white;
+  color: black;
+  width: 300px; /* Thermal printer width approx */
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+}
+
+.printableReceipt {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.receiptHeader {
+  text-align: center;
+}
+
+.shopName {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 5px 0;
+}
+
+.receiptHeader p {
+  margin: 2px 0;
+}
+
+.receiptMeta p {
+  margin: 2px 0;
+}
+
+.divider {
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.itemsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.itemsTable th, .itemsTable td {
+  padding: 2px 0;
+}
+
+.totals {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.grandTotal {
+  font-weight: bold;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.paymentInfo {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 11px;
+}
+
+.footer p {
+  margin: 2px 0;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.cancelBtn, .printBtn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.cancelBtn {
+  background: transparent;
+  border: 1px solid;
+}
+
+.printBtn {
+  border: none;
+}

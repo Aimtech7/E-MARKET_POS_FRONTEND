@@ -12,6 +12,7 @@ import {
   faUser,
   faChartLine,
   faWarehouse,
+  faReceipt,
 } from "@fortawesome/free-solid-svg-icons";
 import { useCookies } from "react-cookie";
 import style from "./style.module.css";
@@ -47,6 +48,9 @@ const Navbar: FC = () => {
       )}
       <Link to={"/sales-history"} title="sales history">
         <FontAwesomeIcon className={style.link} icon={faChartLine} color="white" />
+      </Link>
+      <Link to={"/receipts"} title="receipts">
+        <FontAwesomeIcon className={style.link} icon={faReceipt} color="white" />
       </Link>
       <Link to={"/inventory"} title="inventory">
         <FontAwesomeIcon className={style.link} icon={faWarehouse} color="white" />
