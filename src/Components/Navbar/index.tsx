@@ -20,7 +20,8 @@ import {
   faChevronRight,
   faTruck,
   faFileInvoice,
-  faShieldHalved
+  faShieldHalved,
+  faChartPie
 } from "@fortawesome/free-solid-svg-icons";
 import { useCookies } from "react-cookie";
 import style from "./style.module.css";

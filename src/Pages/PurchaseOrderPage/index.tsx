@@ -20,8 +20,7 @@ type Supplier = {
 };
 
 type POItem = {
-  product: string;
-  productObj?: Product;
+  product: string | Product;
   qty: number;
   price: number;
 };
@@ -81,7 +80,7 @@ const PurchaseOrderPage: FC = () => {
 
     const payload = {
       supplier: newPoSupplier,
-      items: newPoItems.map(i => ({ product: i.product, qty: i.qty, price: i.price })),
+      items: newPoItems.map(i => ({ product: typeof i.product === 'string' ? i.product : i.product._id, qty: i.qty, price: i.price })),
       totalAmount
     };
 
@@ -231,7 +230,7 @@ const PurchaseOrderPage: FC = () => {
                   <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'center' }}>
                     <select 
                       style={{ flex: 2, padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-                      value={item.product}
+                      value={typeof item.product === 'string' ? item.product : item.product._id}
                       onChange={e => updateItem(index, 'product', e.target.value)}
                     >
                       <option value="">Select Product</option>
@@ -297,7 +296,7 @@ const PurchaseOrderPage: FC = () => {
                 <tbody>
                   {selectedPO.items.map((item, idx) => (
                     <tr key={idx} style={{ borderBottom: '1px solid ' + theme.palette.shadow }}>
-                      <td style={{ padding: '8px' }}>{(item.productObj as any)?.productName || item.product?.productName || "Unknown"}</td>
+                      <td style={{ padding: '8px' }}>{typeof item.product === 'object' ? item.product.productName : "Unknown"}</td>
                       <td style={{ padding: '8px', textAlign: 'right' }}>{item.qty}</td>
                       <td style={{ padding: '8px', textAlign: 'right' }}>${item.price.toFixed(2)}</td>
                       <td style={{ padding: '8px', textAlign: 'right' }}>${(item.qty * item.price).toFixed(2)}</td>

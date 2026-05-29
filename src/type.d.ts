@@ -13,12 +13,13 @@ interface Product {
   price: number;
   category: Category;
   unitOfMeasure: UnitOfMeasure;
-  stockQuantity: number;
+  stockQuantity?: number;
   reorderLevel: number;
   expiryDate?: string;
   batchNumber?: string;
   sku?: string;
   barcode?: string;
+  isArchived?: boolean;
 }
 interface CartCeil extends Product{
   qty:number;

@@ -16,6 +16,7 @@ import Select from "../../Components/Select";
 import SearchField from "../../Components/SearchField";
 import axios from "axios";
 import useSnackbar from "../../context/Snackbar/useSnackbar";
+import { useCookies } from "react-cookie";
 /**
  * ## Product Page
  * Product page the page that allow to handle the Product itself in the system.
@@ -38,6 +39,7 @@ const ProductPage: FC = () => {
   // selectedProduct select the product id
   const [selectedProduct, setSlectedProduct] = useState<string>("");
   const [showArchived, setShowArchived] = useState<boolean>(false);
+  const [cookies] = useCookies(["auth"]);
   const dispatch = useDispatch();
 
   const fetchProducts = () => {
@@ -206,7 +208,6 @@ const ProductPage: FC = () => {
           snack.onResponse({
             message: err.response.data.message,
             status: err.response.status,
-          });
           });
         });
     } else if (submitAction === "archive") {

@@ -3,12 +3,13 @@ import style from "./style.module.css";
 import Input from "../../Components/Input";
 import Button from "../../Components/Button";
 import axios from "axios";
-import { toast } from "react-toastify";
+import useSnackbar from "../../context/Snackbar/useSnackbar";
 
 const UserManagementPage = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const snackbar = useSnackbar();
   
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -36,7 +37,7 @@ const UserManagementPage = () => {
       });
       setUsers(response.data);
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to fetch users");
+      snackbar.onResponse({ message: err.response?.data?.message || "Failed to fetch users", status: 500 });
     }
     setLoading(false);
   };
@@ -57,12 +58,12 @@ const UserManagementPage = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       });
-      toast.success("User created successfully!");
+      snackbar.onResponse({ message: "User created successfully!", status: 201 });
       setIsAddModalOpen(false);
       setFormData({ username: "", password: "", fullName: "", email: "", phone: "", role: "cashier" });
       fetchUsers();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Error creating user");
+      snackbar.onResponse({ message: err.response?.data?.message || "Error creating user", status: 500 });
     }
   };
 
@@ -74,12 +75,12 @@ const UserManagementPage = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       });
-      toast.success("User updated successfully!");
+      snackbar.onResponse({ message: "User updated successfully!", status: 200 });
       setIsEditModalOpen(false);
       setCurrentUser(null);
       fetchUsers();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Error updating user");
+      snackbar.onResponse({ message: err.response?.data?.message || "Error updating user", status: 500 });
     }
   };
 
@@ -91,12 +92,12 @@ const UserManagementPage = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       });
-      toast.success("Password reset successfully!");
+      snackbar.onResponse({ message: "Password reset successfully!", status: 200 });
       setIsPasswordModalOpen(false);
       setCurrentUser(null);
       setFormData({ ...formData, password: "" });
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Error resetting password");
+      snackbar.onResponse({ message: err.response?.data?.message || "Error resetting password", status: 500 });
     }
   };
 
@@ -107,10 +108,10 @@ const UserManagementPage = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       });
-      toast.success(`User ${!user.isActive ? 'enabled' : 'disabled'} successfully!`);
+      snackbar.onResponse({ message: `User ${!user.isActive ? 'enabled' : 'disabled'} successfully!`, status: 200 });
       fetchUsers();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Error toggling status");
+      snackbar.onResponse({ message: err.response?.data?.message || "Error toggling status", status: 500 });
     }
   };
 
@@ -122,10 +123,10 @@ const UserManagementPage = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       });
-      toast.success("User deleted successfully!");
+      snackbar.onResponse({ message: "User deleted successfully!", status: 200 });
       fetchUsers();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Error deleting user");
+      snackbar.onResponse({ message: err.response?.data?.message || "Error deleting user", status: 500 });
     }
   };
 

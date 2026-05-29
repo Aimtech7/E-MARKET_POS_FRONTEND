@@ -12,8 +12,10 @@ interface props {
   name?: string;
   disabled?: boolean;
   readOnly?: boolean;
-  onChange?: ChangeEventHandler;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
   error?: boolean;
+  required?: boolean;
+  className?: string;
 }
 
 const Input: FC<props> = ({
@@ -28,6 +30,8 @@ const Input: FC<props> = ({
   readOnly = false,
   onChange,
   error = false,
+  required = false,
+  className = "",
 }) => {
   const theme = useTheme();
   
@@ -47,7 +51,8 @@ const Input: FC<props> = ({
       placeholder={placeholder}
       disabled={disabled}
       readOnly={readOnly}
-      className={`${style.input} ${error ? style.error : ""}`}
+      required={required}
+      className={`${style.input} ${error ? style.error : ""} ${className}`}
     />
   );
 };
