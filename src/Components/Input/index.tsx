@@ -13,7 +13,9 @@ interface props {
   disabled?: boolean;
   readOnly?: boolean;
   onChange?: ChangeEventHandler;
+  error?: boolean;
 }
+
 const Input: FC<props> = ({
   placeholder,
   width,
@@ -25,12 +27,14 @@ const Input: FC<props> = ({
   disabled = false,
   readOnly = false,
   onChange,
+  error = false,
 }) => {
   const theme = useTheme();
+  
   return (
     <input
       style={{
-        width: width ? width : "18em",
+        width: width ? width : "100%",
         border: `1px solid ${color ? color : theme.palette.secondary}`,
         backgroundColor: theme.palette.paper,
         color: theme.palette.textPrimary,
@@ -43,7 +47,7 @@ const Input: FC<props> = ({
       placeholder={placeholder}
       disabled={disabled}
       readOnly={readOnly}
-      className={style.input}
+      className={`${style.input} ${error ? style.error : ""}`}
     />
   );
 };

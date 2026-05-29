@@ -8,7 +8,9 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
 
   return <div style={{ backgroundColor: theme.palette.background }} className={style.layout}>
     <Navbar />
-    {children}
+    <div className={style.content}>
+      {children}
+    </div>
   </div>;
 };
 

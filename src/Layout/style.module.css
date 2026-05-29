@@ -1,4 +1,13 @@
 .layout{
     display: flex;
+    height: 100vh;
+    overflow: hidden;
+    width: 100%;
+}
 
+.content {
+    flex-grow: 1;
+    height: 100vh;
+    overflow-y: auto;
+    background-color: var(--color-background);
 }

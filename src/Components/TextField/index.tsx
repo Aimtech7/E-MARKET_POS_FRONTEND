@@ -1,7 +1,8 @@
 import { FC } from "react";
-import style from "./style.module.css";
-import useTheme from "../../context/Theme/useTheme";
 import { useField } from "formik";
+import Input from "../Input";
+import useTheme from "../../context/Theme/useTheme";
+
 interface props {
   placeholder?: string;
   width?: string;
@@ -10,6 +11,7 @@ interface props {
   id?: string;
   name: string;
 }
+
 const TextField: FC<props> = ({
   placeholder,
   width,
@@ -18,32 +20,28 @@ const TextField: FC<props> = ({
   id,
   name,
 }) => {
-  const [field, meta] = useField(name)
+  const [field, meta] = useField(name);
   const theme = useTheme();
+  
   return (
-    <>
-    <input
-      style={{
-        width: width ? width : "18em",
-        border: meta.error
-          ? "1px solid" + theme.palette.error
-          : `1px solid ${color ? color : theme.palette.secondary}`,
-        backgroundColor: meta.error
-          ? theme.palette.error + "33"
-          : theme.palette.paper,
-        color: theme.palette.textPrimary,
-      }}
-      
-      name={name}
-      id={id}
-      type={type}
-      value={field.value}
-      onChange={field.onChange}
-      placeholder={placeholder}
-      className={style.input}
-    />
-    {meta.error && <p style={{color:theme.palette.error, fontSize:14}}>{meta.error}</p>}
-  </>
+    <div style={{ width: width ? width : "100%", display: "flex", flexDirection: "column", gap: "4px" }}>
+      <Input
+        id={id}
+        name={name}
+        type={type}
+        placeholder={placeholder}
+        width="100%"
+        color={color}
+        value={field.value}
+        onChange={field.onChange}
+        error={!!meta.error && meta.touched}
+      />
+      {meta.error && meta.touched && (
+        <span style={{ color: "var(--color-danger)", fontSize: "12px", textAlign: "left" }}>
+          {meta.error}
+        </span>
+      )}
+    </div>
   );
 };
 

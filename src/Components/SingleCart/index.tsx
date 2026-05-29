@@ -244,36 +244,38 @@ const SingleCart: FC<props> = ({ onClick, orderId, onRemoveOrder }) => {
             className={style.orderData}
             style={{ color: theme.palette.textPrimary }}
           >
-            <div className={style.row}>
-              <p>Discount</p>
-              <div className={style.rowValue}>
-                <p>-%{(cart.discount * 100).toFixed(2)}</p>
-                <Input
-                  onChange={updateDiscount}
-                  width="8em"
-                  type="number"
-                  value={(cart.discount * 100).toFixed(0)}
-                />
+            <div className={style.totalsSection}>
+              <div className={style.row}>
+                <p>Discount</p>
+                <div className={style.rowValue}>
+                  <p>-%{(cart.discount * 100).toFixed(2)}</p>
+                  <Input
+                    onChange={updateDiscount}
+                    width="8em"
+                    type="number"
+                    value={(cart.discount * 100).toFixed(0)}
+                  />
+                </div>
+              </div>
+              <div className={style.row}>
+                <p>Tax</p>
+                <div className={style.rowValue}>
+                  <p>+%{(cart.tax * 100).toFixed(2)}</p>
+                  <Input
+                    onChange={updateTax}
+                    width="8em"
+                    type="number"
+                    value={(cart.tax * 100).toFixed(0)}
+                  />
+                </div>
+              </div>
+              <div className={`${style.row} ${style.grandTotal}`}>
+                <p>Total</p>
+                <p>$ {totalPrice.toFixed(2)}</p>
               </div>
             </div>
-            <div className={style.row}>
-              <p>Tax</p>
-              <div className={style.rowValue}>
-                <p>+%{(cart.tax * 100).toFixed(2)}</p>
-                <Input
-                  onChange={updateTax}
-                  width="8em"
-                  type="number"
-                  value={(cart.tax * 100).toFixed(0)}
-                />
-              </div>
-            </div>
-            <div className={style.row}>
-              <p>Total</p>
-              <p>$ {totalPrice.toFixed(2)}</p>
-            </div>
-            <Button type="submit" variant="error" fullWidth>
-              Continue Payment
+            <Button type="submit" variant="success" size="large" fullWidth className={style.checkoutBtn}>
+              CHECKOUT
             </Button>
           </div>
         </Form>

@@ -68,3 +68,38 @@ a {
   display: flex;
   gap: 1em;
 }
+
+.totalsSection {
+  background-color: var(--color-surface);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.grandTotal {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 12px;
+  margin-top: 4px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.checkoutBtn {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 18px !important;
+  box-shadow: var(--shadow-lg) !important;
+  transition: transform var(--transition-fast) !important;
+}
+
+.checkoutBtn:hover {
+  transform: translateY(-2px) !important;
+  filter: brightness(1.1) !important;
+}

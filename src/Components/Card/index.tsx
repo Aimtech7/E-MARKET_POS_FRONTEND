@@ -19,7 +19,7 @@ const Card: FC<props> = ({
   category,
   media,
   id,
-  className,
+  className = "",
 }) => {
   const theme = useTheme();
   const cartId = useSelector<RootState>(
@@ -31,43 +31,30 @@ const Card: FC<props> = ({
 
   const dispatch = useDispatch();
   const addHandler = () => {
-    // some logic to handle the adding to order
     let isFound = products.find((p) => p.id === id);
     if (isFound) dispatch(addProductToCart(cartId, isFound));
   };
+
   return (
-    <div
-      className={style.card + " " + className}
-      style={{
-        backgroundColor: theme.palette.paper,
-        boxShadow: `0 2px 6px ${theme.palette.shadow}`,
-      }}
-    >
+    <div className={`${style.card} ${className}`}>
       <div className={style.cardMedia}>
         <img src={media} alt={title} />
         <Button
           variant="primary"
-          size="large"
           onClick={addHandler}
           className={style.buttonAdd}
         >
-          Add
+          Add to Cart
         </Button>
       </div>
       <div className={style.cardBody}>
         <div className={style.title}>
-          <p style={{ color: theme.palette.textPrimary }}>{title}</p>.
-          <p style={{ color: theme.palette.textSecondary }}>{unitOfMeasure}</p>
+          <p className={style.titleName}>{title}</p>
+          <p className={style.titleUnit}>{unitOfMeasure}</p>
         </div>
         <div className={style.category}>
-          <p style={{ color: theme.palette.textSecondary }}>Category</p>
-          <span
-            className={style.categoryCeil}
-            style={{
-              backgroundColor: theme.palette.secondary,
-              color: theme.palette.textAction,
-            }}
-          >
+          <p className={style.categoryLabel}>Category</p>
+          <span className={style.categoryCeil}>
             {category}
           </span>
         </div>

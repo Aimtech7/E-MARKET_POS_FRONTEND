@@ -7,22 +7,24 @@ interface props {
   options: { key: string; value: string }[];
   onChange?: ChangeEventHandler<HTMLSelectElement>;
   width?: string;
+  name?: string;
+  value?: string | number;
 }
-const Select: FC<props> = ({ options, onChange, width }) => {
+const Select: FC<props> = ({ options, onChange, width, name, value }) => {
   const theme = useTheme();
 
   return (
     <div
-      className={style.select}
+      className={style.container}
       style={{
-        border: "1px solid" + theme.palette.secondary,
+        border: "1px solid " + theme.palette.secondary,
         backgroundColor: theme.palette.paper,
-        width: width,
+        width: width ? width : "100%",
       }}
     >
       <select
-        name=""
-        id=""
+        name={name}
+        value={value}
         onChange={onChange}
         className={style.select}
         style={{ color: theme.palette.textPrimary }}
@@ -40,7 +42,7 @@ const Select: FC<props> = ({ options, onChange, width }) => {
       <FontAwesomeIcon
         icon={faArrowDown}
         className={style.arrowIcon}
-        color={theme.palette.textPrimary}
+        color={theme.palette.textSecondary}
       />
     </div>
   );
