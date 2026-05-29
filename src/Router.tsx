@@ -7,6 +7,7 @@ import CategoryPage from "./Pages/CategoryPage";
 import UnitOfMeasurePage from "./Pages/UnitOfMeasurePage";
 import SupplierPage from "./Pages/SupplierPage";
 import PurchaseOrderPage from "./Pages/PurchaseOrderPage";
+import AuditLogsPage from "./Pages/AuditLogsPage";
 import AuthenticationGuard from "./Guards/AuthenticationGuard";
 import AdminGuard from "./Guards/AdminGuard";
 import AuthenticationPage from "./Pages/AuthenticationPage";
@@ -82,6 +83,16 @@ const Router: FC = () => {
             <AdminGuard>
               <Layout>
                 <PurchaseOrderPage />
+              </Layout>
+            </AdminGuard>
+          }
+        ></Route>
+        <Route
+          path="/audit"
+          element={
+            <AdminGuard>
+              <Layout>
+                <AuditLogsPage />
               </Layout>
             </AdminGuard>
           }

@@ -19,7 +19,8 @@ import {
   faChevronLeft,
   faChevronRight,
   faTruck,
-  faFileInvoice
+  faFileInvoice,
+  faShieldHalved
 } from "@fortawesome/free-solid-svg-icons";
 import { useCookies } from "react-cookie";
 import style from "./style.module.css";
@@ -92,8 +93,12 @@ const Navbar: FC = () => {
               <span className={style.linkLabel}>Units</span>
             </Link>
             <Link to={"/reports"} title="Reports" className={`${style.link} ${isActive("/reports") ? style.activeLink : ""}`}>
-              <FontAwesomeIcon className={style.linkIcon} icon={faChartLine} />
+              <FontAwesomeIcon className={style.linkIcon} icon={faChartPie} />
               <span className={style.linkLabel}>Reports</span>
+            </Link>
+            <Link to={"/audit"} title="Audit Logs" className={`${style.link} ${isActive("/audit") ? style.activeLink : ""}`}>
+              <FontAwesomeIcon className={style.linkIcon} icon={faShieldHalved} />
+              <span className={style.linkLabel}>Audit Logs</span>
             </Link>
             <Link to={"/settings"} title="Settings" className={`${style.link} ${isActive("/settings") ? style.activeLink : ""}`}>
               <FontAwesomeIcon className={style.linkIcon} icon={faGears} />

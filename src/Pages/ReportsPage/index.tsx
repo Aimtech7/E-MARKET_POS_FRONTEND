@@ -5,6 +5,7 @@ import useTheme from "../../context/Theme/useTheme";
 import Button from "../../Components/Button";
 import Input from "../../Components/Input";
 import useSnackbar from "../../context/Snackbar/useSnackbar";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 
 const ReportsPage: FC = () => {
   const [cookies] = useCookies();
@@ -16,6 +17,30 @@ const ReportsPage: FC = () => {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [downloading, setDownloading] = useState<boolean>(false);
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [loadingCharts, setLoadingCharts] = useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (isAdmin) {
+      fetchChartData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin]);
+
+  const fetchChartData = async () => {
+    setLoadingCharts(true);
+    try {
+      const response = await axios.get("http://localhost:5500/reports/chart", {
+        headers: { Authorization: "barear " + cookies.auth?.token }
+      });
+      setChartData(response.data);
+    } catch (err) {
+      console.error(err);
+      snackbar.onResponse({ message: "Failed to fetch chart data.", status: 500 });
+    } finally {
+      setLoadingCharts(false);
+    }
+  };
 
   if (!isAdmin) {
     return (
@@ -112,8 +137,48 @@ const ReportsPage: FC = () => {
   };
 
   return (
-    <div style={{ padding: "40px", color: theme.palette.textPrimary, backgroundColor: theme.palette.paper, height: "100vh" }}>
+    <div style={{ padding: "40px", color: theme.palette.textPrimary, backgroundColor: theme.palette.paper, minHeight: "100vh" }}>
       <h2 style={{ marginBottom: "20px" }}>Business Reports Generator</h2>
+
+      {/* Chart Section */}
+      <div style={{ 
+        padding: "30px", 
+        borderRadius: "8px", 
+        backgroundColor: theme.palette.secondary + "11",
+        border: `1px solid ${theme.palette.secondary}`,
+        marginBottom: "40px",
+      }}>
+        <h3>Sales & Profit Trends (Last 7 Days)</h3>
+        {loadingCharts ? (
+          <p>Loading charts...</p>
+        ) : chartData.length > 0 ? (
+          <div style={{ height: "300px", width: "100%", marginTop: "20px" }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={theme.palette.primary} stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor={theme.palette.primary} stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="date" stroke={theme.palette.textSecondary} />
+                <YAxis stroke={theme.palette.textSecondary} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                <Tooltip contentStyle={{ backgroundColor: theme.palette.paper, borderColor: theme.palette.secondary, color: theme.palette.textPrimary }} />
+                <Legend />
+                <Area type="monotone" dataKey="revenue" stroke={theme.palette.primary} fillOpacity={1} fill="url(#colorRevenue)" name="Revenue ($)" />
+                <Area type="monotone" dataKey="profit" stroke="#10b981" fillOpacity={1} fill="url(#colorProfit)" name="Profit ($)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <p style={{ marginTop: "20px", opacity: 0.7 }}>No sales data available for the last 7 days.</p>
+        )}
+      </div>
 
       <div style={{ display: "flex", gap: "40px", flexWrap: "wrap" }}>
         {/* Sales Report Card */}
