@@ -18,6 +18,7 @@ import ReportsPage from "./Pages/ReportsPage";
 import SettingsPage from "./Pages/SettingsPage";
 import BackupPage from "./Pages/BackupPage";
 import ClosurePage from "./Pages/ClosurePage";
+import UserManagementPage from "./Pages/UserManagementPage";
 
 const Router: FC = () => {
   return (
@@ -160,6 +161,16 @@ const Router: FC = () => {
             <AdminGuard>
               <Layout>
                 <BackupPage />
+              </Layout>
+            </AdminGuard>
+          }
+        ></Route>
+        <Route
+          path="/management/users"
+          element={
+            <AdminGuard>
+              <Layout>
+                <UserManagementPage />
               </Layout>
             </AdminGuard>
           }
