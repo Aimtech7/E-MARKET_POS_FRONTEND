@@ -30,6 +30,7 @@ const InventoryPage: FC = () => {
   const [adjustQty, setAdjustQty] = useState<number>(0);
   const [adjustReason, setAdjustReason] = useState<string>("");
   const [adjustSubmitting, setAdjustSubmitting] = useState<boolean>(false);
+  const [adjustType, setAdjustType] = useState<"add" | "remove" | "adjust">("adjust");
 
   // Print Barcode Overlay
   const [isBarcodeOpen, setIsBarcodeOpen] = useState<boolean>(false);
@@ -105,10 +106,11 @@ const InventoryPage: FC = () => {
   }, [cookies.auth?.token]);
 
   // Handle manual stock adjustment
-  const handleOpenAdjust = (prod: any) => {
+  const handleOpenAdjust = (prod: any, type: "add" | "remove" | "adjust" = "adjust") => {
     setSelectedProduct(prod);
     setAdjustQty(0);
     setAdjustReason("");
+    setAdjustType(type);
     setIsAdjustOpen(true);
   };
 
@@ -122,11 +124,15 @@ const InventoryPage: FC = () => {
     const token = cookies.auth?.token;
 
     try {
+      let endpoint = "http://localhost:5500/inventory/adjust";
+      if (adjustType === "add") endpoint = "http://localhost:5500/inventory/add";
+      if (adjustType === "remove") endpoint = "http://localhost:5500/inventory/remove";
+
       await axios.post(
-        "http://localhost:5500/inventory/adjust",
+        endpoint,
         {
           productId: selectedProduct._id,
-          qtyAdjustment: adjustQty,
+          quantity: adjustQty,
           reason: adjustReason,
         },
         {
@@ -384,13 +390,29 @@ const InventoryPage: FC = () => {
                         </td>
                         <td>
                           {isAdmin && (
-                            <button
-                              onClick={() => handleOpenAdjust(p)}
-                              className={style.adjustBtn}
-                              style={{ borderColor: theme.palette.primary, color: theme.palette.primary, marginRight: "5px" }}
-                            >
-                              Adjust Stock
-                            </button>
+                            <>
+                              <button
+                                onClick={() => handleOpenAdjust(p, "add")}
+                                className={style.adjustBtn}
+                                style={{ borderColor: "#2ecc71", color: "#2ecc71", marginRight: "5px" }}
+                              >
+                                Add Stock
+                              </button>
+                              <button
+                                onClick={() => handleOpenAdjust(p, "remove")}
+                                className={style.adjustBtn}
+                                style={{ borderColor: "#e74c3c", color: "#e74c3c", marginRight: "5px" }}
+                              >
+                                Remove Stock
+                              </button>
+                              <button
+                                onClick={() => handleOpenAdjust(p, "adjust")}
+                                className={style.adjustBtn}
+                                style={{ borderColor: theme.palette.primary, color: theme.palette.primary, marginRight: "5px" }}
+                              >
+                                Adjust Stock
+                              </button>
+                            </>
                           )}
                           <button
                             onClick={() => {
@@ -433,14 +455,15 @@ const InventoryPage: FC = () => {
                     <th>Action Type</th>
                     <th>Quantity Affected</th>
                     <th>Reason / Note</th>
+                    <th>Author</th>
                   </tr>
                 </thead>
                 <tbody>
                   {inventoryLogs.map((log) => {
                     let color = theme.palette.textPrimary;
-                    if (log.type === "restock" || log.type === "refund") color = "#2ecc71"; // Green for additions
-                    else if (log.type === "sale" || log.type === "expiry_void") color = "#e74c3c"; // Red for deductions
-                    else if (log.type === "adjustment") color = log.qty > 0 ? "#2ecc71" : "#e74c3c";
+                    if (log.type === "restock" || log.type === "refund" || log.type === "add" || log.action === "add") color = "#2ecc71"; // Green for additions
+                    else if (log.type === "sale" || log.type === "expiry_void" || log.type === "remove" || log.action === "remove") color = "#e74c3c"; // Red for deductions
+                    else if (log.type === "adjustment" || log.action === "adjust") color = log.qty > 0 ? "#2ecc71" : "#e74c3c";
 
                     return (
                       <tr key={log._id} style={{ borderBottom: `1px solid ${theme.palette.secondary}22` }}>
@@ -448,14 +471,15 @@ const InventoryPage: FC = () => {
                         <td className={style.bold}>{log.product?.productName || "Unknown Product"}</td>
                         <td>
                           <span style={{ fontWeight: "bold", textTransform: "capitalize", color }}>
-                            {log.type}
+                            {log.action || log.type}
                           </span>
                         </td>
                         <td style={{ color, fontWeight: "bold" }}>
-                          {(log.type === "restock" || log.type === "refund" || (log.type === "adjustment" && log.qty > 0)) ? "+" : ""}
+                          {(log.type === "restock" || log.type === "refund" || log.type === "add" || log.action === "add" || ((log.type === "adjustment" || log.action === "adjust") && log.qty > 0)) ? "+" : ""}
                           {log.qty}
                         </td>
                         <td>{log.reason || "-"}</td>
+                        <td>{log.userId?.username || "System"}</td>
                       </tr>
                     );
                   })}
@@ -622,11 +646,15 @@ const InventoryPage: FC = () => {
         <div className={style.overlay}>
           <div className={style.modal} style={{ backgroundColor: theme.palette.paper }}>
             <div className={style.modalHeader}>
-              <h3>Adjust Stock Levels: {selectedProduct.productName}</h3>
+              <h3>{adjustType === "add" ? "Add Stock" : adjustType === "remove" ? "Remove Stock" : "Adjust Stock Levels"}: {selectedProduct.productName}</h3>
               <button className={style.closeBtn} onClick={() => setIsAdjustOpen(false)}>&times;</button>
             </div>
             <div className={style.modalBody}>
-              <p className={style.modalSubText}>Manual stock adjustments. Negative values deduct inventory, positive values add stock.</p>
+              <p className={style.modalSubText}>
+                {adjustType === "add" && "Increase physical inventory count."}
+                {adjustType === "remove" && "Decrease physical inventory count."}
+                {adjustType === "adjust" && "Force a specific adjustment to physical inventory (+ or -)."}
+              </p>
               
               <div className={style.currentStockDisplay} style={{ backgroundColor: theme.palette.secondary + "22" }}>
                 <span>Current Stock Level:</span>
@@ -634,7 +662,7 @@ const InventoryPage: FC = () => {
               </div>
 
               <div className={style.formGroup}>
-                <label>Stock Quantity Adjustment (Add/Deduct)</label>
+                <label>Stock Quantity to {adjustType === "add" ? "Add" : adjustType === "remove" ? "Remove" : "Adjust (Add/Deduct)"}</label>
                 <Input
                   type="number"
                   value={adjustQty}
