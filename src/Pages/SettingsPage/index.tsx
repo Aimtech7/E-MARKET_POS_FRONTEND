@@ -19,6 +19,7 @@ const SettingsPage: FC = () => {
   const [shopName, setShopName] = useState<string>("");
   const [address, setAddress] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
+  const [shopEmail, setShopEmail] = useState<string>("");
   const [taxRate, setTaxRate] = useState<number>(0);
   const [currency, setCurrency] = useState<string>("");
   const [receiptFooter, setReceiptFooter] = useState<string>("");
@@ -36,6 +37,7 @@ const SettingsPage: FC = () => {
       setShopName(data.shopName || "");
       setAddress(data.address || "");
       setPhone(data.phone || "");
+      setShopEmail(data.shopEmail || "");
       setTaxRate(data.taxRate || 0);
       setCurrency(data.currency || "$");
       setReceiptFooter(data.receiptFooter || "");
@@ -61,7 +63,7 @@ const SettingsPage: FC = () => {
     setSaving(true);
     try {
       await axios.put("http://localhost:5500/settings", {
-        shopName, address, phone, taxRate, currency, receiptFooter
+        shopName, address, phone, shopEmail, taxRate, currency, receiptFooter
       }, {
         headers: { Authorization: "barear " + cookies.auth?.token }
       });
@@ -150,6 +152,10 @@ const SettingsPage: FC = () => {
                   <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
                     <label style={{ fontWeight: "bold" }}>Contact Phone</label>
                     <Input value={phone} onChange={(e: any) => setPhone(e.target.value)} placeholder="e.g. +1 555-1234" width="100%" />
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                    <label style={{ fontWeight: "bold" }}>Contact Email</label>
+                    <Input value={shopEmail} onChange={(e: any) => setShopEmail(e.target.value)} placeholder="e.g. contact@emmarket.com" width="100%" />
                   </div>
                 </>
               )}
