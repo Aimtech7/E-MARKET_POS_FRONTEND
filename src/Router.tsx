@@ -16,6 +16,7 @@ import InventoryPage from "./Pages/InventoryPage";
 import ReceiptPage from "./Pages/ReceiptPage";
 import ReportsPage from "./Pages/ReportsPage";
 import SettingsPage from "./Pages/SettingsPage";
+import BackupPage from "./Pages/BackupPage";
 
 const Router: FC = () => {
   return (
@@ -140,6 +141,16 @@ const Router: FC = () => {
                 <Logout />
               </Layout>
             </Guard>
+          }
+        ></Route>
+        <Route
+          path="/backups"
+          element={
+            <AdminGuard>
+              <Layout>
+                <BackupPage />
+              </Layout>
+            </AdminGuard>
           }
         ></Route>
       </Routes>
