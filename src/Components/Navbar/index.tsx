@@ -47,6 +47,9 @@ const Navbar: FC = () => {
           <Link to={"/reports"} title="reports">
             <FontAwesomeIcon className={style.link} icon={faChartLine} color="white" />
           </Link>
+          <Link to={"/settings"} title="store settings">
+            <FontAwesomeIcon className={style.link} icon={faGears} color="white" />
+          </Link>
         </>
       )}
       <Link to={"/sales-history"} title="sales history">

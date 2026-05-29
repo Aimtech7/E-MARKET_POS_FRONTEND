@@ -15,6 +15,7 @@ import SalesPage from "./Pages/SalesPage";
 import InventoryPage from "./Pages/InventoryPage";
 import ReceiptPage from "./Pages/ReceiptPage";
 import ReportsPage from "./Pages/ReportsPage";
+import SettingsPage from "./Pages/SettingsPage";
 
 const Router: FC = () => {
   return (
@@ -107,6 +108,16 @@ const Router: FC = () => {
             <AdminGuard>
               <Layout>
                 <ReportsPage />
+              </Layout>
+            </AdminGuard>
+          }
+        ></Route>
+        <Route
+          path="/settings"
+          element={
+            <AdminGuard>
+              <Layout>
+                <SettingsPage />
               </Layout>
             </AdminGuard>
           }
