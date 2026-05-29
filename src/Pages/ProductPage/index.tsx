@@ -44,7 +44,9 @@ const ProductPage: FC = () => {
 
   const fetchProducts = () => {
     axios
-      .get(`http://localhost:5500/product/products?includeArchived=${showArchived}`)
+      .get(`http://localhost:5500/product/products?includeArchived=${showArchived}`, {
+        headers: { Authorization: "Bearer " + cookies.auth?.token }
+      })
       .then((res) => dispatch(set_products(res.data)))
       .catch((err) => {
         alert(err.response?.data?.message || err.message);
@@ -53,14 +55,18 @@ const ProductPage: FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5500/category/categories")
+      .get("http://localhost:5500/category/categories", {
+        headers: { Authorization: "Bearer " + cookies.auth?.token }
+      })
       .then((res) => dispatch(set_categories(res.data)))
       .catch((err) => {
         alert(err.response?.data?.message || err.message);
       });
     fetchProducts();
     axios
-      .get("http://localhost:5500/unit/units")
+      .get("http://localhost:5500/unit/units", {
+        headers: { Authorization: "Bearer " + cookies.auth?.token }
+      })
       .then((res) => dispatch(set_units(res.data)))
       .catch((err) => {
         alert(err.response?.data?.message || err.message);
@@ -130,7 +136,9 @@ const ProductPage: FC = () => {
 
     if (submitAction === "add") {
       axios
-        .post("http://localhost:5500/product/new", formData)
+        .post("http://localhost:5500/product/new", formData, {
+          headers: { Authorization: "Bearer " + cookies.auth?.token }
+        })
         .then((res) => {
           snack.onResponse({
             message: "Product "+ res.data.id+" have been Created",
@@ -149,21 +157,21 @@ const ProductPage: FC = () => {
               profitMargin: res.data.product?.profitMargin,
               category: { categoryName: values.category } as Category,
               media: values.image.preview,
-              unitOfMeasure: unitOfMeasures.find(
-                (p) => p.unitOfMeasureName === values.unit
-              ) as UnitOfMeasure,
+              unitOfMeasure: { unitOfMeasureName: values.unit, baseUnitOfMeasure: values.unit, conversionFactor: 1 } as UnitOfMeasure,
             } as Product)
           );
         })
         .catch((err) => {
           snack.onResponse({
-            message: err.response.data.message,
-            status: err.response.status,
+            message: err.response?.data?.message || err.message,
+            status: err.response?.status || 500,
           });
         });
     } else if (submitAction === "update") {
       axios
-        .post("http://localhost:5500/product/update/" + values.id, formData)
+        .post("http://localhost:5500/product/update/" + values.id, formData, {
+          headers: { Authorization: "Bearer " + cookies.auth?.token }
+        })
         .then((res) => {
           snack.onResponse({
             message: res.data.message,
@@ -182,21 +190,21 @@ const ProductPage: FC = () => {
               profitMargin: values.profitMargin,
               category: { categoryName: values.category } as Category,
               media: values.image.preview,
-              unitOfMeasure: unitOfMeasures.find(
-                (p) => p.unitOfMeasureName === values.unit
-              ) as UnitOfMeasure,
+              unitOfMeasure: { unitOfMeasureName: values.unit, baseUnitOfMeasure: values.unit, conversionFactor: 1 } as UnitOfMeasure,
             } as Product)
           );
         })
         .catch((err) => {
           snack.onResponse({
-            message: err.response.data.message,
-            status: err.response.status,
+            message: err.response?.data?.message || err.message,
+            status: err.response?.status || 500,
           });
         });
     } else if (submitAction === "delete") {
       axios
-        .delete("http://localhost:5500/product/delete/" + values.id)
+        .delete("http://localhost:5500/product/delete/" + values.id, {
+          headers: { Authorization: "Bearer " + cookies.auth?.token }
+        })
         .then((res) => {
           snack.onResponse({
             message: res.data.message,
@@ -206,8 +214,8 @@ const ProductPage: FC = () => {
         })
         .catch((err) => {
           snack.onResponse({
-            message: err.response.data.message,
-            status: err.response.status,
+            message: err.response?.data?.message || err.message,
+            status: err.response?.status || 500,
           });
         });
     } else if (submitAction === "archive") {
@@ -336,27 +344,32 @@ const ProductPage: FC = () => {
               )}
               <ImagePicker name="image" />
               <TextField
+                label="Product Name"
                 placeholder="Enter Product Name"
                 width="100%"
                 name="title"
               />
               <TextField
+                label="Product Price"
                 placeholder="Enter Product Price"
                 width="100%"
                 type="number"
                 name="price"
               />
               <TextField
+                label="SKU"
                 placeholder="SKU (Auto-generated if blank)"
                 width="100%"
                 name="sku"
               />
               <TextField
+                label="Barcode"
                 placeholder="Barcode (Auto-generated if blank)"
                 width="100%"
                 name="barcode"
               />
               <TextField
+                label="Reorder Level"
                 placeholder="Reorder Level"
                 width="100%"
                 type="number"
@@ -364,40 +377,38 @@ const ProductPage: FC = () => {
               />
               <div style={{ display: "flex", gap: "10px" }}>
                 <TextField
+                  label="Cost Price"
                   placeholder="Cost Price"
                   width="100%"
                   type="number"
                   name="costPrice"
                 />
                 <TextField
+                  label="Selling Price"
                   placeholder="Selling Price"
                   width="100%"
                   type="number"
                   name="sellingPrice"
                 />
                 <TextField
+                  label="Profit Margin %"
                   placeholder="Profit Margin %"
                   width="100%"
                   type="number"
                   name="profitMargin"
                 />
               </div>
-              <SelectField
+              <TextField
+                label="Category"
+                placeholder="Enter Category"
                 width="100%"
                 name="category"
-                options={categories.map((p) => {
-                  return { key: p.categoryName, value: p.categoryName };
-                })}
               />
-              <SelectField
+              <TextField
+                label="Unit of Measure"
+                placeholder="Enter Unit of Measure"
                 name="unit"
                 width="100%"
-                options={unitOfMeasures.map((p) => {
-                  return {
-                    key: p.unitOfMeasureName,
-                    value: p.unitOfMeasureName,
-                  };
-                })}
               />
               <div className={style.controls}>
                 <Button

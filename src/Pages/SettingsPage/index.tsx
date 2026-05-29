@@ -23,6 +23,8 @@ const SettingsPage: FC = () => {
   const [taxRate, setTaxRate] = useState<number>(0);
   const [currency, setCurrency] = useState<string>("");
   const [receiptFooter, setReceiptFooter] = useState<string>("");
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoUrl, setLogoUrl] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [saving, setSaving] = useState<boolean>(false);
 
@@ -41,6 +43,9 @@ const SettingsPage: FC = () => {
       setTaxRate(data.taxRate || 0);
       setCurrency(data.currency || "$");
       setReceiptFooter(data.receiptFooter || "");
+      if (data.logo) {
+        setLogoUrl("http://localhost:5500/" + data.logo);
+      }
     }).catch(err => {
       console.error(err);
       snackbar.onResponse({ message: "Failed to load store settings.", status: 500 });
@@ -62,9 +67,19 @@ const SettingsPage: FC = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      await axios.put("http://localhost:5500/settings", {
-        shopName, address, phone, shopEmail, taxRate, currency, receiptFooter
-      }, {
+      const formData = new FormData();
+      formData.append("shopName", shopName);
+      formData.append("address", address);
+      formData.append("phone", phone);
+      formData.append("shopEmail", shopEmail);
+      formData.append("taxRate", taxRate.toString());
+      formData.append("currency", currency);
+      formData.append("receiptFooter", receiptFooter);
+      if (logoFile) {
+        formData.append("logo", logoFile);
+      }
+
+      await axios.put("http://localhost:5500/settings", formData, {
         headers: { Authorization: "barear " + cookies.auth?.token }
       });
       snackbar.onResponse({ message: "Store settings saved successfully.", status: 200 });
@@ -166,6 +181,18 @@ const SettingsPage: FC = () => {
                   <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
                     <label style={{ fontWeight: "bold" }}>Receipt Footer Message</label>
                     <Input value={receiptFooter} onChange={(e: any) => setReceiptFooter(e.target.value)} placeholder="e.g. Thank you for shopping with us!" width="100%" />
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "5px", marginTop: "10px" }}>
+                    <label style={{ fontWeight: "bold" }}>Company Logo</label>
+                    {logoUrl && (
+                      <img src={logoUrl} alt="Store Logo" style={{ width: "100px", height: "auto", marginBottom: "10px", borderRadius: "8px" }} />
+                    )}
+                    <input type="file" accept="image/*" onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setLogoFile(e.target.files[0]);
+                        setLogoUrl(URL.createObjectURL(e.target.files[0]));
+                      }
+                    }} style={{ color: theme.palette.textPrimary }} />
                   </div>
                 </>
               )}

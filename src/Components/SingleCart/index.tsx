@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/Reducers";
 import { Formik, Form } from "formik";
 import {
+  addProductToCart,
   checkCart,
   deleteCartProduct,
   updateCart,
@@ -23,6 +24,7 @@ import Input from "../Input";
 import axios from "axios";
 import useSnackbar from "../../context/Snackbar/useSnackbar";
 import ReceiptModal from "../ReceiptModal";
+import { useCookies } from "react-cookie";
 
 const headings = [
   { key: "id", title: "product" },
@@ -46,6 +48,9 @@ const SingleCart: FC<props> = ({ onClick, orderId, onRemoveOrder }) => {
   });
   const [searchValue, setSearchValue] = useState<string>("");
   const [isReceiptOpen, setIsReceiptOpen] = useState<boolean>(false);
+  const [customerSearch, setCustomerSearch] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [cookies] = useCookies();
 
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -53,6 +58,9 @@ const SingleCart: FC<props> = ({ onClick, orderId, onRemoveOrder }) => {
   let cart = (
     useSelector<RootState>((state) => state.cartsReducer) as Cart[]
   ).find((p) => p.cartId === orderId) as Cart;
+  
+  const productsReducer = useSelector<RootState>((state) => state.productsReducer) as Product[];
+
   if(!cart){
     cart = {description:'', products:[], tax:0, discount:0, cartId:''}
   }
@@ -84,6 +92,24 @@ const SingleCart: FC<props> = ({ onClick, orderId, onRemoveOrder }) => {
   };
   const onSearchHandler = (value: string) => {
     setSearchValue(value);
+  };
+  
+  const handleSearchCustomer = async () => {
+    if (!customerSearch) return;
+    try {
+      const res = await axios.get(`http://localhost:5500/customer/search?query=${customerSearch}`, {
+        headers: { Authorization: "barear " + cookies.auth?.token }
+      });
+      setSearchResults(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
+  const handleAttachCustomer = (cust: any) => {
+    dispatch(updateCart(orderId, { customerId: cust._id, customerName: cust.name }));
+    setSearchResults([]);
+    setCustomerSearch("");
   };
   const filterHandler = (id: string) => {
     if (selectedColumn.key === id && selectedColumn.status === "ascending") {
@@ -162,13 +188,17 @@ const SingleCart: FC<props> = ({ onClick, orderId, onRemoveOrder }) => {
     <div className={style.single}>
       <div className={style.orderHead}>
         <h1 style={{ color: theme.palette.textPrimary }}>Order : #{orderId}</h1>
-        <FontAwesomeIcon
-          className={style.arrowRight}
-          icon={faArrowRight}
-          color={theme.palette.textPrimary}
-          cursor={"pointer"}
-          onClick={onClick}
-        />
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <Button variant="danger" onClick={() => dispatch(updateCart(orderId, { products: [] }))} className="clearCartBtn">Clear</Button>
+          <Button variant="warning" onClick={onClick} className="holdCartBtn">Hold Cart</Button>
+          <FontAwesomeIcon
+            className={style.arrowRight}
+            icon={faArrowRight}
+            color={theme.palette.textPrimary}
+            cursor={"pointer"}
+            onClick={onClick}
+          />
+        </div>
       </div>
       <Formik
         onSubmit={() => {
@@ -183,20 +213,69 @@ const SingleCart: FC<props> = ({ onClick, orderId, onRemoveOrder }) => {
             display: "flex",
             flexDirection: "column",
             gap: "1em",
+            height: 'calc(100vh - 100px)',
           }}
         >
-          <SearchField
-            width="100%"
-            color="#66666622"
-            onChange={onSearchHandler}
-          />
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <SearchField
+              width="50%"
+              color="#66666622"
+              onChange={onSearchHandler}
+            />
+            <Input
+              name="barcodeManual"
+              width="50%"
+              placeholder="Manual Barcode..."
+              onChange={(e: any) => {
+                if(e.target.value.length > 5) {
+                   const found = productsReducer.find(p => p.barcode === e.target.value || p.sku === e.target.value);
+                   if (found) {
+                     dispatch(addProductToCart(orderId, found));
+                     snackbar.onResponse({ message: `Added ${found.title}`, status: 200 });
+                     e.target.value = "";
+                   }
+                }
+              }}
+            />
+          </div>
           <Input
             name="description"
             value={cart ? cart.description:''}
             onChange={descriptionChangeHandler}
             width="100%"
           />
-          <div className={style.table}>
+          
+          <div style={{ padding: '10px', background: theme.palette.paper, borderRadius: '8px' }}>
+            <p style={{ color: theme.palette.textPrimary, margin: '0 0 5px 0' }}>
+              Customer: {cart?.customerName || "Walk-in"}
+              {cart?.customerName && (
+                <span style={{ color: 'red', marginLeft: '10px', cursor: 'pointer' }} onClick={() => dispatch(updateCart(orderId, { customerId: undefined, customerName: undefined }))}>Remove</span>
+              )}
+            </p>
+            {!cart?.customerName && (
+              <div style={{ display: 'flex', gap: '5px' }}>
+                <Input
+                  width="100%"
+                  value={customerSearch}
+                  onChange={(e: any) => setCustomerSearch(e.target.value)}
+                  name="customerSearch"
+                  placeholder="Search Phone or Name"
+                />
+                <Button onClick={handleSearchCustomer} variant="primary" type="button">Search</Button>
+              </div>
+            )}
+            {searchResults.length > 0 && (
+              <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                {searchResults.map((cust) => (
+                  <div key={cust._id} style={{ display: 'flex', justifyContent: 'space-between', color: theme.palette.textPrimary, background: '#222', padding: '5px' }}>
+                    <span>{cust.name} - {cust.phone}</span>
+                    <button type="button" onClick={() => handleAttachCustomer(cust)}>Attach</button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className={style.table} style={{ flexGrow: 1, minHeight: 0 }}>
             <div className={style.head}>
               {headings.map((item) => (
                 <div
@@ -274,7 +353,7 @@ const SingleCart: FC<props> = ({ onClick, orderId, onRemoveOrder }) => {
                 <p>$ {totalPrice.toFixed(2)}</p>
               </div>
             </div>
-            <Button type="submit" variant="success" size="large" fullWidth className={style.checkoutBtn}>
+            <Button type="submit" variant="success" size="large" fullWidth className={`${style.checkoutBtn} checkoutBtn`}>
               CHECKOUT
             </Button>
           </div>

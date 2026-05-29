@@ -20,7 +20,14 @@ const Snackbar: FC<props> = ({ response, onClose }) => {
     setTimeout(() => {
       if (snackbar.current) snackbar.current.style.opacity = "0.9";
     }, 0);
-  }, [response]);
+
+    if (response.message) {
+      const timer = setTimeout(() => {
+        onClose();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [response, onClose]);
 
   return (
     <>

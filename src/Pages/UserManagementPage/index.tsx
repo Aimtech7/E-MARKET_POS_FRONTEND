@@ -4,12 +4,14 @@ import Input from "../../Components/Input";
 import Button from "../../Components/Button";
 import axios from "axios";
 import useSnackbar from "../../context/Snackbar/useSnackbar";
+import { useCookies } from "react-cookie";
 
 const UserManagementPage = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const snackbar = useSnackbar();
+  const [cookies] = useCookies(["auth"]);
   
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -32,7 +34,7 @@ const UserManagementPage = () => {
     try {
       const response = await axios.get("http://localhost:5500/api/users", {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
+          Authorization: `Bearer ${cookies.auth?.token}`
         }
       });
       setUsers(response.data);
@@ -55,7 +57,7 @@ const UserManagementPage = () => {
     try {
       await axios.post("http://localhost:5500/api/users/create", formData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
+          Authorization: `Bearer ${cookies.auth?.token}`
         }
       });
       snackbar.onResponse({ message: "User created successfully!", status: 201 });
@@ -72,7 +74,7 @@ const UserManagementPage = () => {
     try {
       await axios.put(`http://localhost:5500/api/users/update/${currentUser.username}`, formData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
+          Authorization: `Bearer ${cookies.auth?.token}`
         }
       });
       snackbar.onResponse({ message: "User updated successfully!", status: 200 });
@@ -89,7 +91,7 @@ const UserManagementPage = () => {
     try {
       await axios.put(`http://localhost:5500/api/users/reset-password/${currentUser.username}`, { newPassword: formData.password }, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
+          Authorization: `Bearer ${cookies.auth?.token}`
         }
       });
       snackbar.onResponse({ message: "Password reset successfully!", status: 200 });
@@ -105,7 +107,7 @@ const UserManagementPage = () => {
     try {
       await axios.put(`http://localhost:5500/api/users/toggle-status/${user.username}`, { isActive: !user.isActive }, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
+          Authorization: `Bearer ${cookies.auth?.token}`
         }
       });
       snackbar.onResponse({ message: `User ${!user.isActive ? 'enabled' : 'disabled'} successfully!`, status: 200 });
@@ -120,7 +122,7 @@ const UserManagementPage = () => {
     try {
       await axios.delete(`http://localhost:5500/api/users/delete/${user.username}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
+          Authorization: `Bearer ${cookies.auth?.token}`
         }
       });
       snackbar.onResponse({ message: "User deleted successfully!", status: 200 });

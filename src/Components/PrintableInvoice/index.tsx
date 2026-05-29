@@ -3,10 +3,11 @@ import style from "./style.module.css";
 
 interface PrintableInvoiceProps {
   invoice: Invoice;
+  storeSettings?: any;
 }
 
 export const PrintableInvoice = forwardRef<HTMLDivElement, PrintableInvoiceProps>(
-  ({ invoice }, ref) => {
+  ({ invoice, storeSettings }, ref) => {
     const cart = invoice.cart || { products: [], tax: 0, discount: 0 };
     const products = cart.products || [];
 
@@ -19,10 +20,13 @@ export const PrintableInvoice = forwardRef<HTMLDivElement, PrintableInvoiceProps
     return (
       <div ref={ref} className={style.ticket}>
         <div className={style.header}>
-          <h1 className={style.title}>EMMARKET</h1>
+          {storeSettings?.logo && (
+            <img src={`http://localhost:5500/${storeSettings.logo}`} alt="Logo" style={{ width: "80px", height: "auto", marginBottom: "10px" }} />
+          )}
+          <h1 className={style.title}>{storeSettings?.shopName || "EMMARKET"}</h1>
           <p className={style.subtitle}>Supermarket POS Receipt</p>
-          <p>123 Market Street, Cityville</p>
-          <p>Tel: +123-456-7890</p>
+          <p>{storeSettings?.address || "123 Market Street, Cityville"}</p>
+          <p>Tel: {storeSettings?.phone || "+123-456-7890"}</p>
         </div>
 
         <div className={style.separator}></div>
@@ -93,7 +97,7 @@ export const PrintableInvoice = forwardRef<HTMLDivElement, PrintableInvoiceProps
         <div className={style.separator}></div>
 
         <div className={style.footer}>
-          <p>Thank you for shopping with us!</p>
+          <p>{storeSettings?.receiptFooter || "Thank you for shopping with us!"}</p>
           <p>Please keep your receipt.</p>
         </div>
       </div>

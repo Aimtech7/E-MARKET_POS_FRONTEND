@@ -22,12 +22,14 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
   const snackbar = useSnackbar();
 
   const [step, setStep] = useState<"payment" | "receipt">("payment");
-  const [paymentMethod, setPaymentMethod] = useState<string>("Cash");
-  const [amountPaid, setAmountPaid] = useState<number>(0);
+  const [cashAmount, setCashAmount] = useState<number>(0);
+  const [cardAmount, setCardAmount] = useState<number>(0);
   const [changeGiven, setChangeGiven] = useState<number>(0);
+  const amountPaid = cashAmount + cardAmount;
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [invoice, setInvoice] = useState<any>(null);
   const [receipt, setReceipt] = useState<any>(null);
+  const [storeSettings, setStoreSettings] = useState<any>(null);
 
   const printComponentRef = useRef<HTMLDivElement>(null);
 
@@ -44,11 +46,16 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
   useEffect(() => {
     // Set default amount paid to final total on open
     if (isOpen) {
-      setAmountPaid(parseFloat(finalTotal.toFixed(2)));
+      setCashAmount(parseFloat(finalTotal.toFixed(2)));
+      setCardAmount(0);
       setStep("payment");
       setInvoice(null);
+      // Fetch Store Settings for logo/header
+      axios.get("http://localhost:5500/settings", { headers: { Authorization: "barear " + cookies.auth?.token } })
+        .then(res => setStoreSettings(res.data))
+        .catch(console.error);
     }
-  }, [isOpen, finalTotal]);
+  }, [isOpen, finalTotal, cookies.auth?.token]);
 
   useEffect(() => {
     const change = amountPaid - finalTotal;
@@ -109,9 +116,9 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
   };
 
   const handleCheckoutProcess = async () => {
-    if (amountPaid < finalTotal) {
+    if (amountPaid < finalTotal && !cart.customerId) {
       snackbar.onResponse({
-        message: "Amount paid cannot be less than the total amount.",
+        message: "Amount paid cannot be less than total unless a Customer is attached for credit sale.",
         status: 400,
       });
       return;
@@ -144,7 +151,11 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
           cartId: dbCartId,
           amountPaid,
           changeGiven,
-          paymentMethod,
+          payments: [
+            { method: "Cash", amount: cashAmount },
+            { method: "Card", amount: cardAmount }
+          ].filter(p => p.amount > 0),
+          customerId: cart.customerId,
         },
         {
           headers: { Authorization: "barear " + token },
@@ -156,12 +167,27 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
         "http://localhost:5500/receipt",
         {
           invoiceId: resInvoice.data.invoice._id,
-          customer: "Walk-in",
+          customer: cart.customerId ? cart.customerName : "Walk-in",
         },
         {
           headers: { Authorization: "barear " + token },
         }
       );
+
+      // 4. Create Debt if Credit Sale
+      if (amountPaid < finalTotal && cart.customerId) {
+        await axios.post(
+          "http://localhost:5500/debts",
+          {
+            customerId: cart.customerId,
+            saleId: resReceipt.data.receipt._id,
+            amount: finalTotal,
+            paid: amountPaid,
+            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days default
+          },
+          { headers: { Authorization: "barear " + token } }
+        );
+      }
 
       // Successfully processed invoice
       snackbar.onResponse({
@@ -226,30 +252,21 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
 
             <div className={style.form}>
               <div className={style.formGroup}>
-                <label>Payment Method</label>
-                <select
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className={style.select}
-                  style={{
-                    backgroundColor: theme.palette.paper,
-                    color: theme.palette.textPrimary,
-                    borderColor: theme.palette.secondary,
-                  }}
-                >
-                  <option value="Cash">Cash</option>
-                  <option value="Card">Credit/Debit Card</option>
-                  <option value="Mobile">Mobile Payment (M-Pesa/Wallet)</option>
-                  <option value="Credit">Store Credit</option>
-                </select>
+                <label>Cash Amount ($)</label>
+                <Input
+                  type="number"
+                  value={cashAmount}
+                  onChange={(e: any) => setCashAmount(parseFloat(e.target.value) || 0)}
+                  width="100%"
+                />
               </div>
 
               <div className={style.formGroup}>
-                <label>Amount Tendered ($)</label>
+                <label>Card Amount ($)</label>
                 <Input
                   type="number"
-                  value={amountPaid}
-                  onChange={(e: any) => setAmountPaid(parseFloat(e.target.value) || 0)}
+                  value={cardAmount}
+                  onChange={(e: any) => setCardAmount(parseFloat(e.target.value) || 0)}
                   width="100%"
                 />
               </div>
@@ -275,7 +292,10 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
               {receipt && (
                 <div style={{ background: "white", padding: "15px", width: "300px", color: "black", fontFamily: "monospace", fontSize: "12px" }} ref={printComponentRef}>
                   <div style={{ textAlign: "center" }}>
-                    <h3 style={{ margin: "0 0 5px 0" }}>EMMARKET SUPERMARKET</h3>
+                    {storeSettings?.logo && (
+                      <img src={`http://localhost:5500/${storeSettings.logo}`} alt="Store Logo" style={{ width: "80px", marginBottom: "5px" }} />
+                    )}
+                    <h3 style={{ margin: "0 0 5px 0" }}>{storeSettings?.shopName || "EMMARKET SUPERMARKET"}</h3>
                     <p style={{ margin: "2px 0" }}>123 Market Street, Cityville</p>
                     <p style={{ margin: "2px 0" }}>Tel: +123-456-7890</p>
                   </div>
@@ -283,6 +303,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
                     <p style={{ margin: "2px 0" }}>Receipt #: {receipt.receiptNumber}</p>
                     <p style={{ margin: "2px 0" }}>Date: {new Date(receipt.timestamp).toLocaleString()}</p>
                     <p style={{ margin: "2px 0" }}>Cashier: {receipt.cashier}</p>
+                    <p style={{ margin: "2px 0" }}>Customer: {cart.customerId ? cart.customerName : "Walk-in"}</p>
                   </div>
                   <div style={{ margin: "5px 0" }}>------------------------------------------</div>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>

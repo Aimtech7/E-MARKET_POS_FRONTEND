@@ -3,8 +3,9 @@ import style from "./style.module.css";
 import useTheme from "../../context/Theme/useTheme";
 import { useDispatch } from "react-redux/es/hooks/useDispatch";
 import { useSelector } from "react-redux";
-import { addProductToCart } from "../../store/Actions";
+import { addProductToCart, createCart, chooseCart } from "../../store/Actions";
 import { RootState } from "../../store/Reducers";
+import useSnackbar from "../../context/Snackbar/useSnackbar";
 interface props {
   title: string;
   unitOfMeasure: string;
@@ -37,10 +38,20 @@ const ProductRow: FC<props> = ({
   const products = useSelector<RootState>(
     (state) => state.productsReducer
   ) as Product[];
+  const snackbar = useSnackbar();
   const addHandler = () => {
     // some logic to handle the adding to order
     let isFound = products.find((p) => p.id === id);
-    if (isFound) dispatch(addProductToCart(cartId, isFound));
+    if (isFound) {
+      let targetCartId = cartId;
+      if (!targetCartId) {
+        targetCartId = Date.now().toString();
+        dispatch(createCart(targetCartId));
+        dispatch(chooseCart(targetCartId));
+      }
+      dispatch(addProductToCart(targetCartId, isFound));
+      snackbar.onResponse({ message: "Product added to cart", status: 200 });
+    }
   };
   return (
     <div

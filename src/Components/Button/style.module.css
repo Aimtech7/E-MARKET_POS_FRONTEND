@@ -46,6 +46,7 @@
 .variant_warning { background-color: var(--color-warning); color: #fff; }
 .variant_error { background-color: var(--color-danger); }
 .variant_success { background-color: var(--color-success); }
+.variant_danger { background-color: var(--color-danger); }
 
 /* Loading State Animation */
 .spinner {

@@ -21,7 +21,8 @@ import {
   faTruck,
   faFileInvoice,
   faShieldHalved,
-  faChartPie
+  faChartPie,
+  faBell
 } from "@fortawesome/free-solid-svg-icons";
 import { useCookies } from "react-cookie";
 import style from "./style.module.css";
@@ -33,13 +34,24 @@ const Navbar: FC = () => {
   const [lowStockCount, setLowStockCount] = useState<number>(0);
   const [collapsed, setCollapsed] = useState(false);
 
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+
   useEffect(() => {
     if (cookies.auth?.token) {
       import("axios").then(axios => {
+        // Fetch low stock count
         axios.default.get("http://localhost:5500/analytics/low-stock", {
           headers: { Authorization: "barear " + cookies.auth.token }
         }).then(res => {
           setLowStockCount(res.data.lowStockCount || 0);
+        }).catch(err => console.error(err));
+
+        // Fetch unread notifications count
+        axios.default.get("http://localhost:5500/notifications", {
+          headers: { Authorization: "barear " + cookies.auth.token }
+        }).then(res => {
+          const unread = res.data.filter((n: any) => !n.isRead).length;
+          setUnreadCount(unread);
         }).catch(err => console.error(err));
       });
     }
@@ -65,6 +77,11 @@ const Navbar: FC = () => {
         <Link to={"/auth"} title="Login" className={`${style.link} ${isActive("/auth") ? style.activeLink : ""}`}>
           <FontAwesomeIcon className={style.linkIcon} icon={faUser} />
           <span className={style.linkLabel}>Login</span>
+        </Link>
+        <Link to={"/notifications"} title="Notifications" className={`${style.link} ${isActive("/notifications") ? style.activeLink : ""}`}>
+          <FontAwesomeIcon className={style.linkIcon} icon={faBell} />
+          <span className={style.linkLabel}>Notifications</span>
+          {unreadCount > 0 && <span className={style.badge}>{unreadCount}</span>}
         </Link>
         
         {cookies.auth?.admin && (
@@ -93,6 +110,10 @@ const Navbar: FC = () => {
               <FontAwesomeIcon className={style.linkIcon} icon={faRuler} />
               <span className={style.linkLabel}>Units</span>
             </Link>
+            <Link to={"/expenses"} title="Expenses" className={`${style.link} ${isActive("/expenses") ? style.activeLink : ""}`}>
+              <FontAwesomeIcon className={style.linkIcon} icon={faChartPie} />
+              <span className={style.linkLabel}>Expenses</span>
+            </Link>
             <Link to={"/reports"} title="Reports" className={`${style.link} ${isActive("/reports") ? style.activeLink : ""}`}>
               <FontAwesomeIcon className={style.linkIcon} icon={faChartPie} />
               <span className={style.linkLabel}>Reports</span>
@@ -120,6 +141,10 @@ const Navbar: FC = () => {
           <FontAwesomeIcon className={style.linkIcon} icon={faWarehouse} />
           <span className={style.linkLabel}>Inventory</span>
           {lowStockCount > 0 && <span className={style.badge}>{lowStockCount}</span>}
+        </Link>
+        <Link to={"/customers"} title="Customers" className={`${style.link} ${isActive("/customers") ? style.activeLink : ""}`}>
+          <FontAwesomeIcon className={style.linkIcon} icon={faUser} />
+          <span className={style.linkLabel}>Customers</span>
         </Link>
         <Link to={"/sales-history"} title="Sales History" className={`${style.link} ${isActive("/sales-history") ? style.activeLink : ""}`}>
           <FontAwesomeIcon className={style.linkIcon} icon={faChartLine} />

@@ -4,7 +4,7 @@ import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 import style from "./style.module.css";
 
 interface props extends PropsWithChildren {
-  variant?: "primary" | "secondary" | "warning" | "error" | "success";
+  variant?: "primary" | "secondary" | "warning" | "error" | "success" | "danger";
   size?: "large" | "normal";
   onClick?: MouseEventHandler<HTMLButtonElement>;
   fullWidth?: boolean;

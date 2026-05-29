@@ -29,6 +29,8 @@ interface Cart {
   description: string;
   tax: number;
   discount: number;
+  customerId?: string;
+  customerName?: string;
   products: CartCeil[];
 }
 interface Action{
@@ -52,6 +54,8 @@ interface Invoice {
   amountPaid: number;
   changeGiven: number;
   paymentMethod: string;
+  payments?: { method: string; amount: number }[];
+  customer?: any;
   timestamp: string;
   pdfPath?: string;
 }

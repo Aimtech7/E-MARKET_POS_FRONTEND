@@ -4,7 +4,8 @@ import useTheme from "../../context/Theme/useTheme";
 import Button from "../Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/Reducers";
-import { addProductToCart } from "../../store/Actions";
+import { addProductToCart, createCart, chooseCart } from "../../store/Actions";
+import useSnackbar from "../../context/Snackbar/useSnackbar";
 interface props {
   title: string;
   unitOfMeasure: string;
@@ -30,9 +31,20 @@ const Card: FC<props> = ({
   ) as Product[];
 
   const dispatch = useDispatch();
+  const snackbar = useSnackbar();
+
   const addHandler = () => {
     let isFound = products.find((p) => p.id === id);
-    if (isFound) dispatch(addProductToCart(cartId, isFound));
+    if (isFound) {
+      let targetCartId = cartId;
+      if (!targetCartId) {
+        targetCartId = Date.now().toString();
+        dispatch(createCart(targetCartId));
+        dispatch(chooseCart(targetCartId));
+      }
+      dispatch(addProductToCart(targetCartId, isFound));
+      snackbar.onResponse({ message: "Product added to cart", status: 200 });
+    }
   };
 
   return (

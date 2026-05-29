@@ -53,11 +53,21 @@ export const useHardwareScanner = () => {
           );
 
           if (foundProduct) {
-            dispatch(addProductToCart(cartIdRef.current, foundProduct));
+            let targetCartId = cartIdRef.current;
+            if (!targetCartId) {
+              targetCartId = Date.now().toString();
+              dispatch({ type: "CREATE_CART", data: { cartId: targetCartId, products: [], description: "", tax: 0, discount: 0 } });
+              dispatch({ type: "CHOOSE_CART", data: targetCartId });
+            }
+            dispatch(addProductToCart(targetCartId, foundProduct));
             snackbar.onResponse({
-              message: `Hardware Scan: Added "${foundProduct.title}" to cart.`,
+              message: `Added "${foundProduct.title}" to cart.`,
               status: 200,
             });
+            try {
+              const audio = new Audio('/beep.mp3');
+              audio.play().catch(e => console.log('Audio error:', e));
+            } catch (e) {}
           } else {
             snackbar.onResponse({
               message: `Scanned code "${barcode}" not matching any product SKU/barcode.`,

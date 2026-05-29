@@ -6,13 +6,15 @@ interface props {
   options: { key: string; value: string }[];
   width?: string;
   name: string;
+  label?: string;
 }
 
-const SelectField: FC<props> = ({ options, width, name }) => {
+const SelectField: FC<props> = ({ options, width, name, label }) => {
   const [field, meta] = useField(name);
   
   return (
     <div style={{ width: width ? width : "100%", display: "flex", flexDirection: "column", gap: "4px" }}>
+      {label && <label htmlFor={name} style={{ fontSize: "14px", fontWeight: "bold" }}>{label}</label>}
       <Select
         name={field.name}
         value={field.value}

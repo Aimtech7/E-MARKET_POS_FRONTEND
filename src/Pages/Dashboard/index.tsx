@@ -32,6 +32,7 @@ const Dashboard: FC = () => {
   const [monthStats, setMonthStats] = useState<any>({ chartData: [], summary: { revenue: 0, orders: 0 } });
   const [productStats, setProductStats] = useState<any[]>([]);
   const [stockStats, setStockStats] = useState<any>({ totalProducts: 0, lowStockCount: 0 });
+  const [netProfitStats, setNetProfitStats] = useState<any>({ revenue: 0, costOfGoods: 0, grossProfit: 0, expenses: 0, netProfit: 0 });
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
   const [revenueView, setRevenueView] = useState<"week" | "month">("week");
@@ -62,12 +63,14 @@ const Dashboard: FC = () => {
         axios.get("http://localhost:5500/analytics/month"),
         axios.get("http://localhost:5500/analytics/products"),
         axios.get("http://localhost:5500/analytics/low-stock"),
-      ]).then(([resToday, resWeek, resMonth, resProd, resStock]) => {
+        axios.get("http://localhost:5500/analytics/net-profit?period=monthly"),
+      ]).then(([resToday, resWeek, resMonth, resProd, resStock, resNet]) => {
         setTodayStats(resToday.data);
         setWeekStats(resWeek.data);
         setMonthStats(resMonth.data);
         setProductStats(resProd.data);
         setStockStats(resStock.data);
+        setNetProfitStats(resNet.data);
       }).catch(err => {
         console.error("Error fetching analytics", err);
       });
@@ -111,6 +114,11 @@ const Dashboard: FC = () => {
             <div className={`${style.statCard} ${stockStats.lowStockCount > 0 ? style.dangerCard : ""}`} style={{ borderColor: theme.palette.secondary }}>
               <h3>Low Stock Items</h3>
               <p className={style.statValue}>{stockStats.lowStockCount}</p>
+            </div>
+            <div className={style.statCard} style={{ borderColor: theme.palette.secondary, backgroundColor: "var(--color-success)", color: "white" }}>
+              <h3>Net Profit (Month)</h3>
+              <p className={style.statValue} style={{ color: "white" }}>${netProfitStats.netProfit.toFixed(2)}</p>
+              <span className={style.statSub} style={{ color: "white", opacity: 0.9 }}>Gross: ${netProfitStats.grossProfit.toFixed(2)} | Exp: ${netProfitStats.expenses.toFixed(2)}</span>
             </div>
           </div>
 

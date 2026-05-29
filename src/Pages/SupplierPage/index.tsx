@@ -28,6 +28,8 @@ const supplierSchema = yup.object().shape({
   isActive: yup.boolean()
 });
 
+let submitAction: "add" | "update" | "delete" | undefined = undefined;
+
 const SupplierPage: FC = () => {
   const theme = useTheme();
   const [cookies] = useCookies(["auth"]);
@@ -56,7 +58,6 @@ const SupplierPage: FC = () => {
   }, []);
 
   let selectedSupplier = suppliers.find(s => s.id === selectedSupplierId) || null;
-  let submitAction: "add" | "update" | "delete" | undefined = undefined;
 
   const onSubmitHandler = (values: any, { resetForm }: any) => {
     const config = { headers: { Authorization: "Bearer " + cookies.auth?.token } };

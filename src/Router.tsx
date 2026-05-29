@@ -22,6 +22,9 @@ import SettingsPage from "./Pages/SettingsPage";
 import BackupPage from "./Pages/BackupPage";
 import ClosurePage from "./Pages/ClosurePage";
 import UserManagementPage from "./Pages/UserManagementPage";
+import NotificationPage from "./Pages/NotificationPage";
+import CustomerPage from "./Pages/CustomerPage";
+import ExpensePage from "./Pages/ExpensePage";
 
 const Router: FC = () => {
   return (
@@ -109,6 +112,16 @@ const Router: FC = () => {
           }
         ></Route>
         <Route
+          path="/notifications"
+          element={
+            <Guard>
+              <Layout>
+                <NotificationPage />
+              </Layout>
+            </Guard>
+          }
+        ></Route>
+        <Route
           path="/dashboard"
           element={
             <AdminGuard>
@@ -116,6 +129,16 @@ const Router: FC = () => {
                 <Dashboard />
               </Layout>
             </AdminGuard>
+          }
+        ></Route>
+        <Route
+          path="/customers"
+          element={
+            <Guard>
+              <Layout>
+                <CustomerPage />
+              </Layout>
+            </Guard>
           }
         ></Route>
         <Route
@@ -194,6 +217,16 @@ const Router: FC = () => {
             <AdminGuard>
               <Layout>
                 <BackupPage />
+              </Layout>
+            </AdminGuard>
+          }
+        ></Route>
+        <Route
+          path="/expenses"
+          element={
+            <AdminGuard>
+              <Layout>
+                <ExpensePage />
               </Layout>
             </AdminGuard>
           }

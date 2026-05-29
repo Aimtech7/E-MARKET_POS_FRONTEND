@@ -10,6 +10,7 @@ interface props {
   type?: string;
   id?: string;
   name: string;
+  label?: string;
 }
 
 const TextField: FC<props> = ({
@@ -19,12 +20,14 @@ const TextField: FC<props> = ({
   type = "text",
   id,
   name,
+  label,
 }) => {
   const [field, meta] = useField(name);
   const theme = useTheme();
   
   return (
     <div style={{ width: width ? width : "100%", display: "flex", flexDirection: "column", gap: "4px" }}>
+      {label && <label htmlFor={id || name} style={{ fontSize: "14px", fontWeight: "bold" }}>{label}</label>}
       <Input
         id={id}
         name={name}

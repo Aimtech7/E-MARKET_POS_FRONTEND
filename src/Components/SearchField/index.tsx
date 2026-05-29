@@ -45,6 +45,7 @@ const SearchField: FC<props> = ({
         icon={faMagnifyingGlass}
       />
       <input
+        className="searchFieldInput"
         placeholder="Search"
         onChange={onChangeHandler}
         value={searchValue}

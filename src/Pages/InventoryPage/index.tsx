@@ -356,6 +356,7 @@ const InventoryPage: FC = () => {
               <table className={style.table}>
                 <thead>
                   <tr style={{ color: theme.palette.textSecondary }}>
+                    <th>Image</th>
                     <th>Product</th>
                     <th>Category</th>
                     <th>Unit</th>
@@ -373,6 +374,7 @@ const InventoryPage: FC = () => {
 
                     return (
                       <tr key={p._id} style={{ borderBottom: `1px solid ${theme.palette.secondary}22` }}>
+                        <td><img src={"http://localhost:5500/" + p.productImage} alt={p.productName} style={{ width: "40px", height: "40px", borderRadius: "4px", objectFit: "cover" }} /></td>
                         <td className={style.bold}>{p.productName}</td>
                         <td>{p.productCategory?.categoryName || "Uncategorized"}</td>
                         <td>{p.unitOfMeasure?.unitOfMeasureName || "Unit"}</td>
@@ -411,6 +413,28 @@ const InventoryPage: FC = () => {
                                 style={{ borderColor: theme.palette.primary, color: theme.palette.primary, marginRight: "5px" }}
                               >
                                 Adjust Stock
+                              </button>
+                              <button
+                                onClick={() => snackbar.onResponse({ message: "Edit coming soon.", status: 200 })}
+                                className={style.adjustBtn}
+                                style={{ borderColor: "#f39c12", color: "#f39c12", marginRight: "5px" }}
+                              >
+                                Edit Product
+                              </button>
+                              <button
+                                onClick={async () => {
+                                  try {
+                                    await axios.delete(`http://localhost:5500/product/${p._id}`, { headers: { Authorization: "barear " + cookies.auth?.token } });
+                                    snackbar.onResponse({ message: "Product archived.", status: 200 });
+                                    fetchProducts();
+                                  } catch (e) {
+                                    snackbar.onResponse({ message: "Failed to archive product.", status: 500 });
+                                  }
+                                }}
+                                className={style.adjustBtn}
+                                style={{ borderColor: "#95a5a6", color: "#95a5a6", marginRight: "5px" }}
+                              >
+                                Archive Product
                               </button>
                             </>
                           )}
