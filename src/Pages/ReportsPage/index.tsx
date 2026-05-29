@@ -81,6 +81,36 @@ const ReportsPage: FC = () => {
     }
   };
 
+  const handleDownloadProfit = async () => {
+    if (!startDate || !endDate) {
+      snackbar.onResponse({ message: "Please select start and end dates.", status: 400 });
+      return;
+    }
+    
+    setDownloading(true);
+    try {
+      const token = cookies.auth?.token;
+      const response = await axios.get(`http://localhost:5500/reports/profit/csv?start=${startDate}&end=${endDate}`, {
+        headers: { Authorization: `barear ${token}` },
+        responseType: 'blob',
+      });
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `profit_report_${startDate}_to_${endDate}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      snackbar.onResponse({ message: "Profit report downloaded successfully.", status: 200 });
+    } catch (err) {
+      console.error(err);
+      snackbar.onResponse({ message: "Failed to download profit report.", status: 500 });
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div style={{ padding: "40px", color: theme.palette.textPrimary, backgroundColor: theme.palette.paper, height: "100vh" }}>
       <h2 style={{ marginBottom: "20px" }}>Business Reports Generator</h2>
@@ -112,6 +142,35 @@ const ReportsPage: FC = () => {
           
           <Button variant="primary" onClick={handleDownloadSales} disabled={downloading} fullWidth>
             Download Sales Report
+          </Button>
+        </div>
+
+        {/* Profit Report Card */}
+        <div style={{ 
+          padding: "30px", 
+          borderRadius: "8px", 
+          backgroundColor: theme.palette.secondary + "11",
+          border: `1px solid ${theme.palette.secondary}`,
+          flex: 1, minWidth: "300px" 
+        }}>
+          <h3>Profit Report (CSV)</h3>
+          <p style={{ opacity: 0.8, fontSize: "14px", marginBottom: "20px" }}>
+            Export revenue, costs, and profit margin analysis for a specific period.
+          </p>
+          
+          <div style={{ display: "flex", gap: "15px", marginBottom: "20px" }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px" }}>Start Date</label>
+              <Input type="date" value={startDate} onChange={(e: any) => setStartDate(e.target.value)} width="100%" />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: "block", marginBottom: "5px", fontSize: "12px" }}>End Date</label>
+              <Input type="date" value={endDate} onChange={(e: any) => setEndDate(e.target.value)} width="100%" />
+            </div>
+          </div>
+          
+          <Button variant="success" onClick={handleDownloadProfit} disabled={downloading} fullWidth>
+            Download Profit Report
           </Button>
         </div>
 

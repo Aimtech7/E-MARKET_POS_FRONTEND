@@ -90,14 +90,19 @@ const Dashboard: FC = () => {
               <span className={style.statSub}>{todayStats.orders} Orders (Avg: ${todayStats.averageSale?.toFixed(2) || "0.00"})</span>
             </div>
             <div className={style.statCard} style={{ borderColor: theme.palette.secondary }}>
+              <h3>Today's Profit</h3>
+              <p className={style.statValue}>${(todayStats.profit || 0).toFixed(2)}</p>
+              <span className={style.statSub}>Margin: {todayStats.revenue ? ((todayStats.profit / todayStats.revenue) * 100).toFixed(1) : "0"}%</span>
+            </div>
+            <div className={style.statCard} style={{ borderColor: theme.palette.secondary }}>
               <h3>Weekly Sales</h3>
               <p className={style.statValue}>${weekStats.summary.revenue.toFixed(2)}</p>
-              <span className={style.statSub}>{weekStats.summary.orders} Orders</span>
+              <span className={style.statSub}>Profit: ${(weekStats.summary.profit || 0).toFixed(2)}</span>
             </div>
             <div className={style.statCard} style={{ borderColor: theme.palette.secondary }}>
               <h3>Monthly Sales</h3>
               <p className={style.statValue}>${monthStats.summary.revenue.toFixed(2)}</p>
-              <span className={style.statSub}>{monthStats.summary.orders} Orders</span>
+              <span className={style.statSub}>Profit: ${(monthStats.summary.profit || 0).toFixed(2)}</span>
             </div>
             <div className={style.statCard} style={{ borderColor: theme.palette.secondary }}>
               <h3>Total Products</h3>
