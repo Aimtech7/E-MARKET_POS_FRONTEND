@@ -14,6 +14,7 @@ import Logout from "./Pages/Logout";
 import SalesPage from "./Pages/SalesPage";
 import InventoryPage from "./Pages/InventoryPage";
 import ReceiptPage from "./Pages/ReceiptPage";
+import ReportsPage from "./Pages/ReportsPage";
 
 const Router: FC = () => {
   return (
@@ -98,6 +99,16 @@ const Router: FC = () => {
                 <ReceiptPage />
               </Layout>
             </Guard>
+          }
+        ></Route>
+        <Route
+          path="/reports"
+          element={
+            <AdminGuard>
+              <Layout>
+                <ReportsPage />
+              </Layout>
+            </AdminGuard>
           }
         ></Route>
         <Route
