@@ -32,6 +32,7 @@ const Dashboard: FC = () => {
   const [monthStats, setMonthStats] = useState<any>({ chartData: [], summary: { revenue: 0, orders: 0 } });
   const [productStats, setProductStats] = useState<any[]>([]);
   const [stockStats, setStockStats] = useState<any>({ totalProducts: 0, lowStockCount: 0 });
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
   const [revenueView, setRevenueView] = useState<"week" | "month">("week");
 
@@ -52,6 +53,7 @@ const Dashboard: FC = () => {
 
     if (isAdmin) {
       axios.get("http://localhost:5500/user/users").then((res) => setUsers(res.data));
+      axios.get("http://localhost:5500/audit").then((res) => setAuditLogs(res.data));
 
       // Fetch Analytics Data
       Promise.all([
@@ -227,6 +229,42 @@ const Dashboard: FC = () => {
                 </div>
               </Form>
             </Formik>
+          </div>
+        </div>
+      )}
+
+      {isAdmin && <div className={style.divider} style={{ backgroundColor: theme.palette.secondary }} />}
+
+      {/* 5. SYSTEM AUDIT LOGS (Admin Only) */}
+      {isAdmin && (
+        <div className={style.users}>
+          <h3>SYSTEM AUDIT LOGS</h3>
+          <div style={{ maxHeight: "400px", overflowY: "auto", border: `1px solid ${theme.palette.secondary}`, borderRadius: "4px" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
+              <thead style={{ backgroundColor: theme.palette.secondary, color: "white" }}>
+                <tr>
+                  <th style={{ padding: "8px", textAlign: "left" }}>Time</th>
+                  <th style={{ padding: "8px", textAlign: "left" }}>User</th>
+                  <th style={{ padding: "8px", textAlign: "left" }}>Action</th>
+                  <th style={{ padding: "8px", textAlign: "left" }}>IP Address</th>
+                </tr>
+              </thead>
+              <tbody>
+                {auditLogs.map((log: any, idx: number) => (
+                  <tr key={idx} style={{ borderBottom: "1px solid #ccc", backgroundColor: idx % 2 === 0 ? "transparent" : theme.palette.secondary + "11" }}>
+                    <td style={{ padding: "8px" }}>{new Date(log.timestamp).toLocaleString()}</td>
+                    <td style={{ padding: "8px" }}>{log.username}</td>
+                    <td style={{ padding: "8px" }}>{log.method} {log.url}</td>
+                    <td style={{ padding: "8px" }}>{log.ip}</td>
+                  </tr>
+                ))}
+                {auditLogs.length === 0 && (
+                  <tr>
+                    <td colSpan={4} style={{ padding: "15px", textAlign: "center" }}>No logs available</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
