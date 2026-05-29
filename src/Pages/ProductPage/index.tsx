@@ -37,27 +37,33 @@ const ProductPage: FC = () => {
   const theme = useTheme();
   // selectedProduct select the product id
   const [selectedProduct, setSlectedProduct] = useState<string>("");
+  const [showArchived, setShowArchived] = useState<boolean>(false);
   const dispatch = useDispatch();
+
+  const fetchProducts = () => {
+    axios
+      .get(`http://localhost:5500/product/products?includeArchived=${showArchived}`)
+      .then((res) => dispatch(set_products(res.data)))
+      .catch((err) => {
+        alert(err.response?.data?.message || err.message);
+      });
+  };
+
   useEffect(() => {
     axios
       .get("http://localhost:5500/category/categories")
       .then((res) => dispatch(set_categories(res.data)))
       .catch((err) => {
-        alert(err.response.message);
+        alert(err.response?.data?.message || err.message);
       });
-    axios
-      .get("http://localhost:5500/product/products")
-      .then((res) => dispatch(set_products(res.data)))
-      .catch((err) => {
-        alert(err.response.message);
-      });
+    fetchProducts();
     axios
       .get("http://localhost:5500/unit/units")
       .then((res) => dispatch(set_units(res.data)))
       .catch((err) => {
-        alert(err.response.message);
+        alert(err.response?.data?.message || err.message);
       });
-  }, [dispatch]);
+  }, [dispatch, showArchived]);
   // GET products from the redux store
   const products = useSelector<RootState>(
     (state) => state.productsReducer
@@ -74,8 +80,8 @@ const ProductPage: FC = () => {
     setSlectedProduct(id);
   };
   // after selecting the product id we have to find the correct item
-  let selectedItem = products.find((p) => p.id === selectedProduct);
-  let submitAction: "add" | "update" | "delete" | undefined = undefined;
+  let selectedItem = products.find((p) => p.id === selectedProduct) as any;
+  let submitAction: "add" | "update" | "delete" | "archive" | "restore" | undefined = undefined;
   const [searchValue, setSearcchValue] = useState("");
   const [filters, setFilters] = useState({
     category: "all",
@@ -115,6 +121,9 @@ const ProductPage: FC = () => {
     if (values.sku) formData.append("sku", values.sku);
     if (values.barcode) formData.append("barcode", values.barcode);
     if (values.reorderLevel !== undefined) formData.append("reorderLevel", values.reorderLevel);
+    if (values.costPrice !== undefined) formData.append("costPrice", values.costPrice);
+    if (values.sellingPrice !== undefined) formData.append("sellingPrice", values.sellingPrice);
+    if (values.profitMargin !== undefined) formData.append("profitMargin", values.profitMargin);
     formData.append("image", values.image.img);
 
     if (submitAction === "add") {
@@ -133,6 +142,9 @@ const ProductPage: FC = () => {
               sku: res.data.product?.sku,
               barcode: res.data.product?.barcode,
               reorderLevel: res.data.product?.reorderLevel,
+              costPrice: res.data.product?.costPrice,
+              sellingPrice: res.data.product?.sellingPrice,
+              profitMargin: res.data.product?.profitMargin,
               category: { categoryName: values.category } as Category,
               media: values.image.preview,
               unitOfMeasure: unitOfMeasures.find(
@@ -163,6 +175,9 @@ const ProductPage: FC = () => {
               sku: values.sku,
               barcode: values.barcode,
               reorderLevel: values.reorderLevel,
+              costPrice: values.costPrice,
+              sellingPrice: values.sellingPrice,
+              profitMargin: values.profitMargin,
               category: { categoryName: values.category } as Category,
               media: values.image.preview,
               unitOfMeasure: unitOfMeasures.find(
@@ -192,7 +207,22 @@ const ProductPage: FC = () => {
             message: err.response.data.message,
             status: err.response.status,
           });
+          });
         });
+    } else if (submitAction === "archive") {
+      axios.put("http://localhost:5500/product/archive/" + values.id, null, { headers: { Authorization: "Bearer " + cookies.auth?.token }})
+        .then((res) => {
+          snack.onResponse({ message: res.data.message, status: res.status });
+          fetchProducts();
+        })
+        .catch((err) => snack.onResponse({ message: err.response?.data?.message, status: err.response?.status }));
+    } else if (submitAction === "restore") {
+      axios.put("http://localhost:5500/product/restore/" + values.id, null, { headers: { Authorization: "Bearer " + cookies.auth?.token }})
+        .then((res) => {
+          snack.onResponse({ message: res.data.message, status: res.status });
+          fetchProducts();
+        })
+        .catch((err) => snack.onResponse({ message: err.response?.data?.message, status: err.response?.status }));
     }
   };
   const onChangeUnitOfMeasureFilterHandler = (
@@ -226,6 +256,12 @@ const ProductPage: FC = () => {
               return { key: p.unitOfMeasureName, value: p.unitOfMeasureName };
             })}
           />
+          <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto', gap: '8px' }}>
+            <label style={{ color: theme.palette.textPrimary, fontSize: '14px', cursor: 'pointer' }}>
+              <input type="checkbox" checked={showArchived} onChange={(e) => setShowArchived(e.target.checked)} style={{ marginRight: '5px' }} />
+              Show Archived
+            </label>
+          </div>
         </div>
         <div
           className={style.table}
@@ -243,7 +279,7 @@ const ProductPage: FC = () => {
                 e.stopPropagation();
                 selectProductHandler(product.id);
               }}
-              title={product.title}
+              title={product.title + (product.isArchived ? " (Archived)" : "")}
               media={product.media}
               unitOfMeasure={product.unitOfMeasure.unitOfMeasureName}
               category={product.category.categoryName}
@@ -280,6 +316,9 @@ const ProductPage: FC = () => {
             sku: selectedItem ? selectedItem.sku || "" : "",
             barcode: selectedItem ? selectedItem.barcode || "" : "",
             reorderLevel: selectedItem ? selectedItem.reorderLevel || 5 : 5,
+            costPrice: selectedItem ? selectedItem.costPrice || 0 : 0,
+            sellingPrice: selectedItem ? selectedItem.sellingPrice || 0 : 0,
+            profitMargin: selectedItem ? selectedItem.profitMargin || 0 : 0,
             image: { preview: selectedItem?.media, img: selectedItem?.media },
           }}
         >
@@ -322,6 +361,26 @@ const ProductPage: FC = () => {
                 type="number"
                 name="reorderLevel"
               />
+              <div style={{ display: "flex", gap: "10px" }}>
+                <TextField
+                  placeholder="Cost Price"
+                  width="100%"
+                  type="number"
+                  name="costPrice"
+                />
+                <TextField
+                  placeholder="Selling Price"
+                  width="100%"
+                  type="number"
+                  name="sellingPrice"
+                />
+                <TextField
+                  placeholder="Profit Margin %"
+                  width="100%"
+                  type="number"
+                  name="profitMargin"
+                />
+              </div>
               <SelectField
                 width="100%"
                 name="category"
@@ -373,6 +432,29 @@ const ProductPage: FC = () => {
                     >
                       Delete
                     </Button>
+                    {!selectedItem.isArchived ? (
+                      <Button
+                        fullWidth
+                        onClick={() => {
+                          submitAction = "archive";
+                          handleSubmit();
+                        }}
+                        variant="secondary"
+                      >
+                        Archive
+                      </Button>
+                    ) : (
+                      <Button
+                        fullWidth
+                        onClick={() => {
+                          submitAction = "restore";
+                          handleSubmit();
+                        }}
+                        variant="primary"
+                      >
+                        Restore
+                      </Button>
+                    )}
                   </>
                 )}
               </div>

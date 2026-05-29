@@ -27,6 +27,9 @@ export const productShcema = yup.object().shape({
   sku: yup.string(),
   barcode: yup.string(),
   reorderLevel: yup.number().min(0, "Reorder level must be 0 or greater"),
+  costPrice: yup.number().min(0),
+  sellingPrice: yup.number().min(0),
+  profitMargin: yup.number(),
 });
 
 export const userSchema = yup.object().shape({
