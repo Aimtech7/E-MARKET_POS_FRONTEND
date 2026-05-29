@@ -17,7 +17,8 @@ import {
   faCalendarCheck,
   faStore,
   faChevronLeft,
-  faChevronRight
+  faChevronRight,
+  faTruck
 } from "@fortawesome/free-solid-svg-icons";
 import { useCookies } from "react-cookie";
 import style from "./style.module.css";
@@ -76,6 +77,10 @@ const Navbar: FC = () => {
             <Link to={"/category"} title="Categories" className={`${style.link} ${isActive("/category") ? style.activeLink : ""}`}>
               <FontAwesomeIcon className={style.linkIcon} icon={faTag} />
               <span className={style.linkLabel}>Categories</span>
+            </Link>
+            <Link to={"/suppliers"} title="Suppliers" className={`${style.link} ${isActive("/suppliers") ? style.activeLink : ""}`}>
+              <FontAwesomeIcon className={style.linkIcon} icon={faTruck} />
+              <span className={style.linkLabel}>Suppliers</span>
             </Link>
             <Link to={"/unit-measure"} title="Unit of Measure" className={`${style.link} ${isActive("/unit-measure") ? style.activeLink : ""}`}>
               <FontAwesomeIcon className={style.linkIcon} icon={faRuler} />
