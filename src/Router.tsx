@@ -6,6 +6,7 @@ import ProductPage from "./Pages/ProductPage";
 import CategoryPage from "./Pages/CategoryPage";
 import UnitOfMeasurePage from "./Pages/UnitOfMeasurePage";
 import AuthenticationGuard from "./Guards/AuthenticationGuard";
+import AdminGuard from "./Guards/AdminGuard";
 import AuthenticationPage from "./Pages/AuthenticationPage";
 import Layout from "./Layout";
 import Dashboard from "./Pages/Dashboard";
@@ -30,31 +31,31 @@ const Router: FC = () => {
         <Route
           path="/product"
           element={
-            <Guard>
+            <AdminGuard>
               <Layout>
                 <ProductPage />
               </Layout>
-            </Guard>
+            </AdminGuard>
           }
         ></Route>
         <Route
           path="/category"
           element={
-            <Guard>
+            <AdminGuard>
               <Layout>
                 <CategoryPage />
               </Layout>
-            </Guard>
+            </AdminGuard>
           }
         ></Route>
         <Route
           path="/unit-measure"
           element={
-            <Guard>
+            <AdminGuard>
               <Layout>
                 <UnitOfMeasurePage />
               </Layout>
-            </Guard>
+            </AdminGuard>
           }
         ></Route>
 
@@ -71,11 +72,11 @@ const Router: FC = () => {
         <Route
           path="/dashboard"
           element={
-            <Guard>
+            <AdminGuard>
               <Layout>
                 <Dashboard />
               </Layout>
-            </Guard>
+            </AdminGuard>
           }
         ></Route>
         <Route

@@ -13,6 +13,8 @@ const InventoryPage: FC = () => {
   const [cookies] = useCookies();
   const theme = useTheme();
   const snackbar = useSnackbar();
+  
+  const isAdmin = cookies.auth?.admin;
 
   const [activeTab, setActiveTab] = useState<Tab>("stock");
   const [products, setProducts] = useState<any[]>([]);
@@ -303,20 +305,24 @@ const InventoryPage: FC = () => {
           >
             Inventory History
           </button>
-          <button
-            onClick={() => setActiveTab("suppliers")}
-            className={`${style.tabBtn} ${activeTab === "suppliers" ? style.activeTab : ""}`}
-            style={{ color: theme.palette.textPrimary }}
-          >
-            Supplier Directory
-          </button>
-          <button
-            onClick={() => setActiveTab("po")}
-            className={`${style.tabBtn} ${activeTab === "po" ? style.activeTab : ""}`}
-            style={{ color: theme.palette.textPrimary }}
-          >
-            Purchase Orders
-          </button>
+          {isAdmin && (
+            <>
+              <button
+                onClick={() => setActiveTab("suppliers")}
+                className={`${style.tabBtn} ${activeTab === "suppliers" ? style.activeTab : ""}`}
+                style={{ color: theme.palette.textPrimary }}
+              >
+                Supplier Directory
+              </button>
+              <button
+                onClick={() => setActiveTab("po")}
+                className={`${style.tabBtn} ${activeTab === "po" ? style.activeTab : ""}`}
+                style={{ color: theme.palette.textPrimary }}
+              >
+                Purchase Orders
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -372,13 +378,15 @@ const InventoryPage: FC = () => {
                           )}
                         </td>
                         <td>
-                          <button
-                            onClick={() => handleOpenAdjust(p)}
-                            className={style.adjustBtn}
-                            style={{ borderColor: theme.palette.primary, color: theme.palette.primary }}
-                          >
-                            Adjust Stock
-                          </button>
+                          {isAdmin && (
+                            <button
+                              onClick={() => handleOpenAdjust(p)}
+                              className={style.adjustBtn}
+                              style={{ borderColor: theme.palette.primary, color: theme.palette.primary }}
+                            >
+                              Adjust Stock
+                            </button>
+                          )}
                         </td>
                       </tr>
                     );
