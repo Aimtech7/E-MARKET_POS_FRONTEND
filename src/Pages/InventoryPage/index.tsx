@@ -5,6 +5,7 @@ import useTheme from "../../context/Theme/useTheme";
 import useSnackbar from "../../context/Snackbar/useSnackbar";
 import Button from "../../Components/Button";
 import Input from "../../Components/Input";
+import PrintBarcodeModal from "../../Components/PrintBarcodeModal";
 import style from "./style.module.css";
 
 type Tab = "stock" | "history" | "suppliers" | "po";
@@ -29,6 +30,10 @@ const InventoryPage: FC = () => {
   const [adjustQty, setAdjustQty] = useState<number>(0);
   const [adjustReason, setAdjustReason] = useState<string>("");
   const [adjustSubmitting, setAdjustSubmitting] = useState<boolean>(false);
+
+  // Print Barcode Overlay
+  const [isBarcodeOpen, setIsBarcodeOpen] = useState<boolean>(false);
+  const [barcodeProduct, setBarcodeProduct] = useState<any | null>(null);
 
   // Supplier Form state
   const [supName, setSupName] = useState<string>("");
@@ -382,11 +387,21 @@ const InventoryPage: FC = () => {
                             <button
                               onClick={() => handleOpenAdjust(p)}
                               className={style.adjustBtn}
-                              style={{ borderColor: theme.palette.primary, color: theme.palette.primary }}
+                              style={{ borderColor: theme.palette.primary, color: theme.palette.primary, marginRight: "5px" }}
                             >
                               Adjust Stock
                             </button>
                           )}
+                          <button
+                            onClick={() => {
+                              setBarcodeProduct(p);
+                              setIsBarcodeOpen(true);
+                            }}
+                            className={style.adjustBtn}
+                            style={{ borderColor: theme.palette.textSecondary, color: theme.palette.textSecondary }}
+                          >
+                            Print Barcode
+                          </button>
                         </td>
                       </tr>
                     );
@@ -740,6 +755,12 @@ const InventoryPage: FC = () => {
           </div>
         </div>
       )}
+
+      <PrintBarcodeModal
+        isOpen={isBarcodeOpen}
+        onClose={() => setIsBarcodeOpen(false)}
+        product={barcodeProduct}
+      />
     </div>
   );
 };
