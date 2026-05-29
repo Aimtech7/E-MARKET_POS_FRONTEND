@@ -21,6 +21,20 @@ import style from "./style.module.css";
 const Navbar: FC = () => {
   const [cookies] = useCookies();
   const theme = useTheme();
+  const [lowStockCount, setLowStockCount] = React.useState<number>(0);
+
+  React.useEffect(() => {
+    if (cookies.auth?.token) {
+      import("axios").then(axios => {
+        axios.default.get("http://localhost:5500/analytics/low-stock", {
+          headers: { Authorization: "barear " + cookies.auth.token }
+        }).then(res => {
+          setLowStockCount(res.data.lowStockCount || 0);
+        }).catch(err => console.error(err));
+      });
+    }
+  }, [cookies.auth?.token]);
+
   return (
     <header
       className={style.header}
@@ -66,8 +80,23 @@ const Navbar: FC = () => {
       <Link to={"/receipts"} title="receipts">
         <FontAwesomeIcon className={style.link} icon={faReceipt} color="white" />
       </Link>
-      <Link to={"/inventory"} title="inventory">
+      <Link to={"/inventory"} title="inventory" style={{ position: "relative" }}>
         <FontAwesomeIcon className={style.link} icon={faWarehouse} color="white" />
+        {lowStockCount > 0 && (
+          <span style={{
+            position: "absolute",
+            top: "-5px",
+            right: "-10px",
+            backgroundColor: "red",
+            color: "white",
+            borderRadius: "50%",
+            padding: "2px 6px",
+            fontSize: "10px",
+            fontWeight: "bold"
+          }}>
+            {lowStockCount}
+          </span>
+        )}
       </Link>
       <Link to={"/logout"} title="logout">
         <FontAwesomeIcon className={style.link} icon={faSignOut} color="white" />

@@ -2,7 +2,7 @@ import React, { FC, MouseEventHandler, PropsWithChildren } from "react";
 import useTheme from "../../context/Theme/useTheme";
 import style from "./style.module.css";
 interface props extends PropsWithChildren {
-  variant?: "primary" | "secondary" | "warning" | "error";
+  variant?: "primary" | "secondary" | "warning" | "error" | "success";
   size?: "large" | "normal";
   onClick?: MouseEventHandler<HTMLButtonElement>;
   fullWidth?: boolean;
@@ -36,6 +36,8 @@ const Button: FC<props> = ({
   else if (variant === "error") styles.backgroundColor = theme.palette.error;
   else if (variant === "warning")
     styles.backgroundColor = theme.palette.warning;
+  else if (variant === "success")
+    styles.backgroundColor = "#2ecc71";
 
   if (size === "large") styles.padding = "1em 2em";
   else styles.padding = "0.7em 1em";

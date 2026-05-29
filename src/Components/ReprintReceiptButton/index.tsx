@@ -31,11 +31,12 @@ const ReprintReceiptButton: FC<ReprintReceiptButtonProps> = ({ receiptId }) => {
   return (
     <>
       <Button 
-        title={loading ? "Loading..." : "Reprint"} 
         type="button" 
         onClick={handleFetchAndPreview} 
         disabled={loading}
-      />
+      >
+        {loading ? "Loading..." : "Reprint"}
+      </Button>
       {receiptData && (
         <ReceiptPreviewModal 
           receipt={receiptData} 

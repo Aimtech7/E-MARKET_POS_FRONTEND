@@ -1,7 +1,7 @@
 import React, { FC, useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 import style from "./style.module.css";
-import useTheme from "../../../context/Theme/useTheme";
+import useTheme from "../../context/Theme/useTheme";
 
 interface ReceiptPreviewModalProps {
   receipt: any;

@@ -10,7 +10,9 @@ interface props {
   id?: string;
   value?: string | number;
   name?: string;
-  onChange: ChangeEventHandler;
+  disabled?: boolean;
+  readOnly?: boolean;
+  onChange?: ChangeEventHandler;
 }
 const Input: FC<props> = ({
   placeholder,
@@ -20,6 +22,8 @@ const Input: FC<props> = ({
   id,
   name,
   value,
+  disabled = false,
+  readOnly = false,
   onChange,
 }) => {
   const theme = useTheme();
@@ -37,6 +41,8 @@ const Input: FC<props> = ({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
+      disabled={disabled}
+      readOnly={readOnly}
       className={style.input}
     />
   );
