@@ -61,8 +61,36 @@ const ReceiptPage: FC = () => {
                   <td>{r.cashier}</td>
                   <td className={style.bold}>${r.grandTotal?.toFixed(2)}</td>
                   <td>{r.paymentMethod}</td>
-                  <td>
+                  <td style={{ display: "flex", gap: "10px" }}>
                     <ReprintReceiptButton receiptId={r._id} />
+                    {cookies.auth?.admin && (
+                      <button 
+                        onClick={async () => {
+                          if (window.confirm("Are you sure you want to refund this entire transaction and return items to inventory?")) {
+                            try {
+                              await axios.post("http://localhost:5500/refunds/process", {
+                                originalInvoiceId: r.invoiceReference
+                              }, {
+                                headers: { Authorization: "barear " + cookies.auth?.token }
+                              });
+                              alert("Refund processed successfully!");
+                            } catch (e: any) {
+                              alert("Failed to process refund: " + (e.response?.data?.message || e.message));
+                            }
+                          }
+                        }}
+                        style={{
+                          backgroundColor: "#f44336",
+                          color: "white",
+                          border: "none",
+                          padding: "5px 10px",
+                          borderRadius: "4px",
+                          cursor: "pointer"
+                        }}
+                      >
+                        Refund
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
