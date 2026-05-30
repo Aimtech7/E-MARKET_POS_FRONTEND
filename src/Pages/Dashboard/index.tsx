@@ -19,6 +19,8 @@ import style from "./style.module.css";
 import InventoryForecastWidget from "./InventoryForecastWidget";
 import EmployeeAnalyticsWidget from "./EmployeeAnalyticsWidget";
 
+import ExpiryAlertsWidget from "./ExpiryAlertsWidget";
+
 const Dashboard: FC = () => {
   const snack = useSnackbar();
   const theme = useTheme();
@@ -35,6 +37,7 @@ const Dashboard: FC = () => {
   const [productStats, setProductStats] = useState<any[]>([]);
   const [stockStats, setStockStats] = useState<any>({ totalProducts: 0, lowStockCount: 0 });
   const [netProfitStats, setNetProfitStats] = useState<any>({ revenue: 0, costOfGoods: 0, grossProfit: 0, expenses: 0, netProfit: 0 });
+  const [valuationStats, setValuationStats] = useState<any>({ totalCostValue: 0, totalRetailValue: 0, potentialProfit: 0 });
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
   const [revenueView, setRevenueView] = useState<"week" | "month">("week");
@@ -66,13 +69,15 @@ const Dashboard: FC = () => {
         axios.get("http://localhost:5500/analytics/products"),
         axios.get("http://localhost:5500/analytics/low-stock"),
         axios.get("http://localhost:5500/analytics/net-profit?period=monthly"),
-      ]).then(([resToday, resWeek, resMonth, resProd, resStock, resNet]) => {
+        axios.get("http://localhost:5500/analytics/valuation"),
+      ]).then(([resToday, resWeek, resMonth, resProd, resStock, resNet, resValuation]) => {
         setTodayStats(resToday.data);
         setWeekStats(resWeek.data);
         setMonthStats(resMonth.data);
         setProductStats(resProd.data);
         setStockStats(resStock.data);
         setNetProfitStats(resNet.data);
+        setValuationStats(resValuation.data);
       }).catch(err => {
         console.error("Error fetching analytics", err);
       });
@@ -109,6 +114,13 @@ const Dashboard: FC = () => {
               <p className={style.statValue}>${monthStats.summary.revenue.toFixed(2)}</p>
               <span className={style.statSub}>Profit: ${(monthStats.summary.profit || 0).toFixed(2)}</span>
             </div>
+            
+            <div className={style.statCard} style={{ borderColor: theme.palette.secondary, backgroundColor: "var(--color-primary)", color: "white" }}>
+              <h3>Inventory Valuation</h3>
+              <p className={style.statValue} style={{ color: "white" }}>${valuationStats.totalCostValue.toFixed(2)}</p>
+              <span className={style.statSub} style={{ color: "white", opacity: 0.9 }}>Retail Val: ${valuationStats.totalRetailValue.toFixed(2)} | Pot. Profit: ${valuationStats.potentialProfit.toFixed(2)}</span>
+            </div>
+            
             <div className={style.statCard} style={{ borderColor: theme.palette.secondary }}>
               <h3>Total Products</h3>
               <p className={style.statValue}>{stockStats.totalProducts}</p>
@@ -166,6 +178,7 @@ const Dashboard: FC = () => {
           
           <InventoryForecastWidget />
           <EmployeeAnalyticsWidget />
+          <ExpiryAlertsWidget />
           
         </div>
       )}
