@@ -21,6 +21,8 @@ import EmployeeAnalyticsWidget from "./EmployeeAnalyticsWidget";
 
 import ExpiryAlertsWidget from "./ExpiryAlertsWidget";
 
+import AIMAssistantWidget from "./AIMAssistantWidget";
+
 const Dashboard: FC = () => {
   const snack = useSnackbar();
   const theme = useTheme();
@@ -85,11 +87,18 @@ const Dashboard: FC = () => {
   }, [cookies.auth.token, isAdmin]);
 
   return (
-    <div className={style.container} style={{ color: theme.palette.textPrimary, backgroundColor: theme.palette.paper }}>
-      
+    <div className={style.dashboard}>
+      <header className={style.header}>
+        <h2>{isAdmin ? "Admin Overview" : "Cashier Dashboard"}</h2>
+        <p className={style.subtitle}>Welcome back, here is what's happening today.</p>
+      </header>
+
       {/* 1. ANALYTICS SECTION (Admin Only) */}
       {isAdmin && (
-        <div className={style.analyticsSection}>
+        <div className={style.adminSection}>
+          <AIMAssistantWidget />
+          
+          <div className={style.cardsGrid}>
           <h2 style={{ marginBottom: "20px" }}>Dashboard Overview</h2>
           
           {/* Summary Cards */}

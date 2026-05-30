@@ -127,16 +127,51 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
     setSubmitting(true);
     const token = cookies.auth?.token;
 
+    const cartPayload = {
+      description: cart.description || "POS Supermarket Sale",
+      tax: cart.tax,
+      discount: cart.discount,
+      products: cart.products.map((p) => ({ product: p.id, qty: p.qty })),
+    };
+
+    const invoicePayload = {
+      amountPaid,
+      changeGiven,
+      payments: [
+        { method: "Cash", amount: cashAmount },
+        { method: "Card", amount: cardAmount }
+      ].filter(p => p.amount > 0),
+      customerId: cart.customerId,
+    };
+
+    const receiptPayload = {
+      customer: cart.customerId ? cart.customerName : "Walk-in",
+    };
+
+    if (!navigator.onLine) {
+      import("../../utils/offlineSync").then(({ saveOfflineCheckout }) => {
+        saveOfflineCheckout({
+          cartData: cartPayload,
+          invoiceData: invoicePayload,
+          receiptData: receiptPayload,
+          finalTotal
+        });
+        snackbar.onResponse({
+          message: "You are offline. Transaction saved and will sync when reconnected.",
+          status: 201,
+        });
+        setSubmitting(false);
+        onSuccess();
+        onClose();
+      });
+      return;
+    }
+
     try {
       // 1. Get or Create Cart in Database
       const resCart = await axios.post(
         "http://localhost:5500/cart/check", 
-        {
-          description: cart.description || "POS Supermarket Sale",
-          tax: cart.tax,
-          discount: cart.discount,
-          products: cart.products.map((p) => ({ product: p.id, qty: p.qty })),
-        },
+        cartPayload,
         {
           headers: { Authorization: "barear " + token },
         }
@@ -147,16 +182,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
       // 2. Create the Invoice
       const resInvoice = await axios.post(
         "http://localhost:5500/invoice",
-        {
-          cartId: dbCartId,
-          amountPaid,
-          changeGiven,
-          payments: [
-            { method: "Cash", amount: cashAmount },
-            { method: "Card", amount: cardAmount }
-          ].filter(p => p.amount > 0),
-          customerId: cart.customerId,
-        },
+        { ...invoicePayload, cartId: dbCartId },
         {
           headers: { Authorization: "barear " + token },
         }
@@ -165,10 +191,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
       // 3. Create the Receipt
       const resReceipt = await axios.post(
         "http://localhost:5500/receipt",
-        {
-          invoiceId: resInvoice.data.invoice._id,
-          customer: cart.customerId ? cart.customerName : "Walk-in",
-        },
+        { ...receiptPayload, invoiceId: resInvoice.data.invoice._id },
         {
           headers: { Authorization: "barear " + token },
         }

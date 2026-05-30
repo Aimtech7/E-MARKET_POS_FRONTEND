@@ -26,6 +26,7 @@ import NotificationPage from "./Pages/NotificationPage";
 import CustomerPage from "./Pages/CustomerPage";
 import ExpensePage from "./Pages/ExpensePage";
 import LoyaltyPage from "./Pages/LoyaltyPage";
+import MobileDashboard from "./Pages/MobileDashboard";
 
 const Router: FC = () => {
   return (
@@ -249,6 +250,14 @@ const Router: FC = () => {
               <Layout>
                 <UserManagementPage />
               </Layout>
+            </AdminGuard>
+          }
+        ></Route>
+        <Route
+          path="/mobile"
+          element={
+            <AdminGuard>
+              <MobileDashboard />
             </AdminGuard>
           }
         ></Route>
