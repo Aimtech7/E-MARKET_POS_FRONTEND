@@ -16,6 +16,8 @@ import Button from "../../Components/Button";
 import { userSchema } from "../../schema";
 import useSnackbar from "../../context/Snackbar/useSnackbar";
 import style from "./style.module.css";
+import InventoryForecastWidget from "./InventoryForecastWidget";
+import EmployeeAnalyticsWidget from "./EmployeeAnalyticsWidget";
 
 const Dashboard: FC = () => {
   const snack = useSnackbar();
@@ -161,6 +163,10 @@ const Dashboard: FC = () => {
               </ResponsiveContainer>
             </div>
           </div>
+          
+          <InventoryForecastWidget />
+          <EmployeeAnalyticsWidget />
+          
         </div>
       )}
 
