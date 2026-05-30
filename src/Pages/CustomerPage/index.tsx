@@ -20,6 +20,7 @@ const CustomerPage: FC = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [debts, setDebts] = useState<any[]>([]);
+  const [loyalty, setLoyalty] = useState<any>(null);
 
   useEffect(() => {
     fetchCustomers();
@@ -46,6 +47,13 @@ const CustomerPage: FC = () => {
         headers: { Authorization: "Bearer " + cookies.auth.token },
       })
       .then((res) => setDebts(res.data));
+
+    axios
+      .get(`http://localhost:5500/loyalty/customer/${customerId}`, {
+        headers: { Authorization: "Bearer " + cookies.auth.token },
+      })
+      .then((res) => setLoyalty(res.data))
+      .catch(() => setLoyalty(null));
   };
 
   const filteredCustomers = customers.filter(
@@ -211,6 +219,21 @@ const CustomerPage: FC = () => {
                     {debts.length === 0 && <tr><td colSpan={4}>No debts found</td></tr>}
                   </tbody>
                 </table>
+              </div>
+
+              <div className={style.loyaltySection} style={{ gridColumn: "1 / -1", marginTop: "20px" }}>
+                <h3>Loyalty Program</h3>
+                {loyalty ? (
+                  <div style={{ display: "flex", gap: "20px", padding: "15px", backgroundColor: theme.palette.secondary + "44", borderRadius: "8px" }}>
+                    <div><strong>Tier:</strong> <span style={{ color: "var(--color-warning)" }}>{loyalty.tier}</span></div>
+                    <div><strong>Points:</strong> {loyalty.points}</div>
+                    <div><strong>Total Lifetime Spent:</strong> ${loyalty.totalSpent?.toFixed(2)}</div>
+                  </div>
+                ) : (
+                  <div style={{ padding: "15px", backgroundColor: theme.palette.secondary + "44", borderRadius: "8px" }}>
+                    Customer is not enrolled or hasn't earned points yet.
+                  </div>
+                )}
               </div>
             </div>
           </div>

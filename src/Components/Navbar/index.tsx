@@ -146,6 +146,10 @@ const Navbar: FC = () => {
           <FontAwesomeIcon className={style.linkIcon} icon={faUser} />
           <span className={style.linkLabel}>Customers</span>
         </Link>
+        <Link to={"/loyalty"} title="Loyalty" className={`${style.link} ${isActive("/loyalty") ? style.activeLink : ""}`}>
+          <FontAwesomeIcon className={style.linkIcon} icon={faUser} />
+          <span className={style.linkLabel}>Loyalty</span>
+        </Link>
         <Link to={"/sales-history"} title="Sales History" className={`${style.link} ${isActive("/sales-history") ? style.activeLink : ""}`}>
           <FontAwesomeIcon className={style.linkIcon} icon={faChartLine} />
           <span className={style.linkLabel}>Sales</span>

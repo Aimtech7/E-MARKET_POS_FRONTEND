@@ -25,6 +25,7 @@ import UserManagementPage from "./Pages/UserManagementPage";
 import NotificationPage from "./Pages/NotificationPage";
 import CustomerPage from "./Pages/CustomerPage";
 import ExpensePage from "./Pages/ExpensePage";
+import LoyaltyPage from "./Pages/LoyaltyPage";
 
 const Router: FC = () => {
   return (
@@ -227,6 +228,16 @@ const Router: FC = () => {
             <AdminGuard>
               <Layout>
                 <ExpensePage />
+              </Layout>
+            </AdminGuard>
+          }
+        ></Route>
+        <Route
+          path="/loyalty"
+          element={
+            <AdminGuard>
+              <Layout>
+                <LoyaltyPage />
               </Layout>
             </AdminGuard>
           }

@@ -189,6 +189,22 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
         );
       }
 
+      // 5. Add Loyalty Points
+      if (cart.customerId) {
+        try {
+          await axios.post(
+            "http://localhost:5500/loyalty/add",
+            {
+              customerId: cart.customerId,
+              amountSpent: finalTotal,
+            },
+            { headers: { Authorization: "barear " + token } }
+          );
+        } catch (e) {
+          console.log("Error adding loyalty points", e);
+        }
+      }
+
       // Successfully processed invoice
       snackbar.onResponse({
         message: "Transaction and Receipt completed successfully.",
@@ -216,6 +232,33 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
   const handleDownloadPDF = () => {
     if (receipt && receipt.receiptNumber) {
       window.open(`http://localhost:5500/uploads/receipts/${receipt.receiptNumber}.pdf`, "_blank");
+    }
+  };
+
+  const handleWhatsApp = async () => {
+    if (!cart.customerId) {
+      snackbar.onResponse({ message: "No customer selected. Search and attach customer first.", status: 400 });
+      return;
+    }
+    
+    // Fetch customer to get phone number
+    try {
+      const res = await axios.get(`http://localhost:5500/customer/${cart.customerId}`, {
+        headers: { Authorization: "barear " + cookies.auth?.token }
+      });
+      const phone = res.data.phone;
+      if (!phone) {
+        snackbar.onResponse({ message: "Customer does not have a phone number.", status: 400 });
+        return;
+      }
+      
+      const receiptText = `Receipt ${receipt.receiptNumber}%0A` +
+        `Total: $${receipt.grandTotal.toFixed(2)}%0A` +
+        `Thank you for shopping at ${storeSettings?.shopName || "EMMARKET"}!`;
+      
+      window.open(`https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${receiptText}`, "_blank");
+    } catch (e) {
+      snackbar.onResponse({ message: "Failed to load customer phone number.", status: 500 });
     }
   };
 
@@ -363,6 +406,9 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
             <div className={style.actions}>
               <Button onClick={handlePrint} variant="primary" className={style.actionBtn}>
                 Print Receipt
+              </Button>
+              <Button onClick={handleWhatsApp} variant="success" className={style.actionBtn}>
+                WhatsApp Receipt
               </Button>
               <Button onClick={handleDownloadPDF} variant="secondary" className={style.actionBtn}>
                 Download PDF
