@@ -41,7 +41,7 @@ const SettingsPage: FC = () => {
       setPhone(data.phone || "");
       setShopEmail(data.shopEmail || "");
       setTaxRate(data.taxRate || 0);
-      setCurrency(data.currency || "$");
+      setCurrency(data.currency || "Ksh");
       setReceiptFooter(data.receiptFooter || "");
       if (data.logo) {
         setLogoUrl("http://localhost:5500/" + data.logo);
@@ -148,7 +148,7 @@ const SettingsPage: FC = () => {
                   <h3>General Settings</h3>
                   <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
                     <label style={{ fontWeight: "bold" }}>Currency Symbol</label>
-                    <Input value={currency} onChange={(e: any) => setCurrency(e.target.value)} placeholder="e.g. $" width="100%" />
+                    <Input value={currency} onChange={(e: any) => setCurrency(e.target.value)} placeholder="e.g. Ksh" width="100%" />
                   </div>
                 </>
               )}

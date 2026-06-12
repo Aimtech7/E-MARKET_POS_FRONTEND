@@ -23,7 +23,7 @@ const Row: FC<props> = ({ id, media, price, title, qty,unitOfMeasure, onQTYChang
       <img src={media} alt={title} />
       <div className={style.title}>
         <p>{title } <small>{unitOfMeasure}</small></p>
-        <small>$ {price}</small>
+        <small>Ksh {price}</small>
       </div>
       <input
         style={{
@@ -38,7 +38,7 @@ const Row: FC<props> = ({ id, media, price, title, qty,unitOfMeasure, onQTYChang
         value={qty}
         onChange={onChangeHandler}
       />
-      <p>$ {(price * qty).toFixed(2)}</p>
+      <p>Ksh {(price * qty).toFixed(2)}</p>
       <FontAwesomeIcon
         onClick={()=>onDelete(id)}
         icon={faTrashCan}

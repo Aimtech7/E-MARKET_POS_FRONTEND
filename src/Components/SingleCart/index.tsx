@@ -350,7 +350,7 @@ const SingleCart: FC<props> = ({ onClick, orderId, onRemoveOrder }) => {
               </div>
               <div className={`${style.row} ${style.grandTotal}`}>
                 <p>Total</p>
-                <p>$ {totalPrice.toFixed(2)}</p>
+                <p>Ksh {totalPrice.toFixed(2)}</p>
               </div>
             </div>
             <Button type="submit" variant="success" size="large" fullWidth className={`${style.checkoutBtn} checkoutBtn`}>

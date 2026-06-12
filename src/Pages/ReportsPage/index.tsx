@@ -5,7 +5,11 @@ import useTheme from "../../context/Theme/useTheme";
 import Button from "../../Components/Button";
 import Input from "../../Components/Input";
 import useSnackbar from "../../context/Snackbar/useSnackbar";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, PieChart, Pie, Cell } from 'recharts';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
 const ReportsPage: FC = () => {
   const [cookies] = useCookies();
@@ -17,7 +21,9 @@ const ReportsPage: FC = () => {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [downloading, setDownloading] = useState<boolean>(false);
+  const [downloadingPdf, setDownloadingPdf] = useState<boolean>(false);
   const [chartData, setChartData] = useState<any[]>([]);
+  const [productStats, setProductStats] = useState<any[]>([]);
   const [loadingCharts, setLoadingCharts] = useState<boolean>(false);
 
   React.useEffect(() => {
@@ -34,6 +40,11 @@ const ReportsPage: FC = () => {
         headers: { Authorization: "barear " + cookies.auth?.token }
       });
       setChartData(response.data);
+
+      const prodRes = await axios.get("http://localhost:5500/analytics/products", {
+        headers: { Authorization: "barear " + cookies.auth?.token }
+      });
+      setProductStats(prodRes.data);
     } catch (err) {
       console.error(err);
       snackbar.onResponse({ message: "Failed to fetch chart data.", status: 500 });
@@ -136,48 +147,116 @@ const ReportsPage: FC = () => {
     }
   };
 
+  const handleDownloadVisualReport = async () => {
+    const input = document.getElementById('visual-report-content');
+    if (!input) return;
+    setDownloadingPdf(true);
+    try {
+      const canvas = await html2canvas(input, { scale: 2 });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      // Calculate top margin to center if it's smaller than page height
+      const margin = 10;
+      pdf.addImage(imgData, 'PNG', margin, margin, pdfWidth - (margin*2), pdfHeight - (margin*2));
+      pdf.save(`visual_report_${new Date().getTime()}.pdf`);
+      snackbar.onResponse({ message: "Visual report downloaded successfully.", status: 200 });
+    } catch (err) {
+      console.error(err);
+      snackbar.onResponse({ message: "Failed to generate visual report.", status: 500 });
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
+
   return (
     <div style={{ padding: "40px", color: theme.palette.textPrimary, backgroundColor: theme.palette.paper, minHeight: "100vh" }}>
       <h2 style={{ marginBottom: "20px" }}>Business Reports Generator</h2>
 
-      {/* Chart Section */}
-      <div style={{ 
+      {/* Visual Report Section with ID for PDF rendering */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: "20px" }}>
+        <h3>Visual Analytics</h3>
+        <Button variant="secondary" onClick={handleDownloadVisualReport} disabled={downloadingPdf || loadingCharts}>
+          {downloadingPdf ? "Generating PDF..." : "Download Visual Report (PDF)"}
+        </Button>
+      </div>
+
+      <div id="visual-report-content" style={{ 
         padding: "30px", 
         borderRadius: "8px", 
         backgroundColor: theme.palette.secondary + "11",
         border: `1px solid ${theme.palette.secondary}`,
         marginBottom: "40px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "40px"
       }}>
-        <h3>Sales & Profit Trends (Last 7 Days)</h3>
-        {loadingCharts ? (
-          <p>Loading charts...</p>
-        ) : chartData.length > 0 ? (
-          <div style={{ height: "300px", width: "100%", marginTop: "20px" }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={theme.palette.primary} stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor={theme.palette.primary} stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="date" stroke={theme.palette.textSecondary} />
-                <YAxis stroke={theme.palette.textSecondary} />
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <Tooltip contentStyle={{ backgroundColor: theme.palette.paper, borderColor: theme.palette.secondary, color: theme.palette.textPrimary }} />
-                <Legend />
-                <Area type="monotone" dataKey="revenue" stroke={theme.palette.primary} fillOpacity={1} fill="url(#colorRevenue)" name="Revenue ($)" />
-                <Area type="monotone" dataKey="profit" stroke="#10b981" fillOpacity={1} fill="url(#colorProfit)" name="Profit ($)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        ) : (
-          <p style={{ marginTop: "20px", opacity: 0.7 }}>No sales data available for the last 7 days.</p>
-        )}
+        <div>
+          <h3 style={{ marginBottom: "20px" }}>Sales & Profit Trends (Last 7 Days)</h3>
+          {loadingCharts ? (
+            <p>Loading charts...</p>
+          ) : chartData.length > 0 ? (
+            <div style={{ height: "300px", width: "100%" }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={theme.palette.primary} stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor={theme.palette.primary} stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="date" stroke={theme.palette.textSecondary} />
+                  <YAxis stroke={theme.palette.textSecondary} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <Tooltip contentStyle={{ backgroundColor: theme.palette.paper, borderColor: theme.palette.secondary, color: theme.palette.textPrimary }} />
+                  <Legend />
+                  <Area type="monotone" dataKey="revenue" stroke={theme.palette.primary} fillOpacity={1} fill="url(#colorRevenue)" name="Revenue (Ksh)" />
+                  <Area type="monotone" dataKey="profit" stroke="#10b981" fillOpacity={1} fill="url(#colorProfit)" name="Profit (Ksh)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <p style={{ marginTop: "20px", opacity: 0.7 }}>No sales data available for the last 7 days.</p>
+          )}
+        </div>
+
+        <div>
+          <h3 style={{ marginBottom: "20px" }}>Product Sales Distribution</h3>
+          {loadingCharts ? (
+            <p>Loading charts...</p>
+          ) : productStats.length > 0 ? (
+            <div style={{ height: "300px", width: "100%" }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={productStats}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="qtySold"
+                    nameKey="_id"
+                    label={({ name, percent }) => `${name.substring(0, 10)} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {productStats.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ backgroundColor: theme.palette.paper, borderColor: theme.palette.secondary, color: theme.palette.textPrimary }} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <p style={{ marginTop: "20px", opacity: 0.7 }}>No product data available.</p>
+          )}
+        </div>
       </div>
 
       <div style={{ display: "flex", gap: "40px", flexWrap: "wrap" }}>

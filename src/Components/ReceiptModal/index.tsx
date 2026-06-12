@@ -66,6 +66,15 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
     contentRef: printComponentRef,
   });
 
+  // Auto-print receipt when transaction succeeds and step switches to 'receipt'
+  useEffect(() => {
+    if (step === "receipt" && receipt) {
+      setTimeout(() => {
+        handlePrint();
+      }, 500);
+    }
+  }, [step, receipt, handlePrint]);
+
   const handleCompletePayment = async () => {
     if (amountPaid < finalTotal) {
       snackbar.onResponse({
@@ -156,13 +165,31 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
           receiptData: receiptPayload,
           finalTotal
         });
+        const localReceipt = {
+          receiptNumber: "OFF-" + Date.now().toString().slice(-6),
+          timestamp: new Date().toISOString(),
+          cashier: "Offline",
+          items: cart.products.map((p: any) => ({
+            productName: p.name || p.productName || "Item",
+            qty: p.qty,
+            unitPrice: p.price,
+          })),
+          subtotal,
+          tax: taxAmount,
+          discount: discountAmount,
+          grandTotal: finalTotal,
+          paymentMethod: cardAmount > 0 ? "Card" : "Cash",
+          amountPaid,
+          changeGiven
+        };
+        setReceipt(localReceipt);
+        setStep("receipt");
+
         snackbar.onResponse({
-          message: "You are offline. Transaction saved and will sync when reconnected.",
+          message: "You are offline. Transaction saved and receipt generated. Will sync when reconnected.",
           status: 201,
         });
         setSubmitting(false);
-        onSuccess();
-        onClose();
       });
       return;
     }
@@ -276,7 +303,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
       }
       
       const receiptText = `Receipt ${receipt.receiptNumber}%0A` +
-        `Total: $${receipt.grandTotal.toFixed(2)}%0A` +
+        `Total: Ksh ${receipt.grandTotal.toFixed(2)}%0A` +
         `Thank you for shopping at ${storeSettings?.shopName || "EMMARKET"}!`;
       
       window.open(`https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${receiptText}`, "_blank");
@@ -300,25 +327,25 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
             <div className={style.summaryCard} style={{ backgroundColor: theme.palette.secondary + "22" }}>
               <div className={style.summaryRow}>
                 <span>Subtotal:</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>Ksh {subtotal.toFixed(2)}</span>
               </div>
               <div className={style.summaryRow}>
                 <span>Discount ({(cart.discount * 100).toFixed(0)}%):</span>
-                <span>-${discountAmount.toFixed(2)}</span>
+                <span>-Ksh {discountAmount.toFixed(2)}</span>
               </div>
               <div className={style.summaryRow}>
                 <span>Tax ({(cart.tax * 100).toFixed(0)}%):</span>
-                <span>+${taxAmount.toFixed(2)}</span>
+                <span>+Ksh {taxAmount.toFixed(2)}</span>
               </div>
               <div className={`${style.summaryRow} ${style.totalRow}`}>
                 <span>Total Amount Due:</span>
-                <span className={style.totalPrice}>${finalTotal.toFixed(2)}</span>
+                <span className={style.totalPrice}>Ksh {finalTotal.toFixed(2)}</span>
               </div>
             </div>
 
             <div className={style.form}>
               <div className={style.formGroup}>
-                <label>Cash Amount ($)</label>
+                <label>Cash Amount (Ksh)</label>
                 <Input
                   type="number"
                   value={cashAmount}
@@ -328,7 +355,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
               </div>
 
               <div className={style.formGroup}>
-                <label>Card Amount ($)</label>
+                <label>Card Amount (Ksh)</label>
                 <Input
                   type="number"
                   value={cardAmount}
@@ -339,7 +366,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
 
               <div className={style.changeDisplay}>
                 <span>Change Given:</span>
-                <span className={style.changeValue}>${changeGiven.toFixed(2)}</span>
+                <span className={style.changeValue}>Ksh {changeGiven.toFixed(2)}</span>
               </div>
 
               <Button
@@ -385,7 +412,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
                         <tr key={idx}>
                           <td style={{ textAlign: "left" }}>{item.productName.substring(0, 15)}</td>
                           <td style={{ textAlign: "center" }}>{item.qty}</td>
-                          <td style={{ textAlign: "right" }}>${(item.qty * item.unitPrice).toFixed(2)}</td>
+                          <td style={{ textAlign: "right" }}>Ksh {(item.qty * item.unitPrice).toFixed(2)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -393,31 +420,31 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
                   <div style={{ margin: "5px 0" }}>------------------------------------------</div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span>Subtotal:</span>
-                    <span>${receipt.subtotal.toFixed(2)}</span>
+                    <span>Ksh {receipt.subtotal.toFixed(2)}</span>
                   </div>
                   {receipt.tax > 0 && (
                     <div style={{ display: "flex", justifyContent: "space-between" }}>
                       <span>Tax:</span>
-                      <span>+${receipt.tax.toFixed(2)}</span>
+                      <span>+Ksh {receipt.tax.toFixed(2)}</span>
                     </div>
                   )}
                   {receipt.discount > 0 && (
                     <div style={{ display: "flex", justifyContent: "space-between" }}>
                       <span>Discount:</span>
-                      <span>-${receipt.discount.toFixed(2)}</span>
+                      <span>-Ksh {receipt.discount.toFixed(2)}</span>
                     </div>
                   )}
                   <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold", marginTop: "5px" }}>
                     <span>TOTAL:</span>
-                    <span>${receipt.grandTotal.toFixed(2)}</span>
+                    <span>Ksh {receipt.grandTotal.toFixed(2)}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", marginTop: "5px" }}>
                     <span>Paid ({receipt.paymentMethod}):</span>
-                    <span>${receipt.amountPaid.toFixed(2)}</span>
+                    <span>Ksh {receipt.amountPaid.toFixed(2)}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span>Change:</span>
-                    <span>${receipt.changeGiven.toFixed(2)}</span>
+                    <span>Ksh {receipt.changeGiven.toFixed(2)}</span>
                   </div>
                   <div style={{ textAlign: "center", marginTop: "10px", fontSize: "11px" }}>
                     <p style={{ margin: "2px 0" }}>Thank you for shopping with us!</p>

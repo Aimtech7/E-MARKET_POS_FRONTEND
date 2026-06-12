@@ -4,8 +4,10 @@ import { useCookies } from "react-cookie";
 import { Form, Formik } from "formik";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
-  BarChart, Bar, Legend
+  BarChart, Bar, Legend, PieChart, Pie, Cell
 } from 'recharts';
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 import useTheme from "../../context/Theme/useTheme";
 import { keys } from "../../context/Theme/Palettes";
 import Select from "../../Components/Select";
@@ -104,29 +106,29 @@ const Dashboard: FC = () => {
           <div className={style.cardsGrid}>
             <div className={style.statCard} style={{ borderColor: theme.palette.secondary }}>
               <h3>Today's Sales</h3>
-              <p className={style.statValue}>${todayStats.revenue.toFixed(2)}</p>
-              <span className={style.statSub}>{todayStats.orders} Orders (Avg: ${todayStats.averageSale?.toFixed(2) || "0.00"})</span>
+              <p className={style.statValue}>Ksh {todayStats.revenue.toFixed(2)}</p>
+              <span className={style.statSub}>{todayStats.orders} Orders (Avg: Ksh {todayStats.averageSale?.toFixed(2) || "0.00"})</span>
             </div>
             <div className={style.statCard} style={{ borderColor: theme.palette.secondary }}>
               <h3>Today's Profit</h3>
-              <p className={style.statValue}>${(todayStats.profit || 0).toFixed(2)}</p>
+              <p className={style.statValue}>Ksh {(todayStats.profit || 0).toFixed(2)}</p>
               <span className={style.statSub}>Margin: {todayStats.revenue ? ((todayStats.profit / todayStats.revenue) * 100).toFixed(1) : "0"}%</span>
             </div>
             <div className={style.statCard} style={{ borderColor: theme.palette.secondary }}>
               <h3>Weekly Sales</h3>
-              <p className={style.statValue}>${weekStats.summary.revenue.toFixed(2)}</p>
-              <span className={style.statSub}>Profit: ${(weekStats.summary.profit || 0).toFixed(2)}</span>
+              <p className={style.statValue}>Ksh {weekStats.summary.revenue.toFixed(2)}</p>
+              <span className={style.statSub}>Profit: Ksh {(weekStats.summary.summary?.profit || weekStats.summary.profit || 0).toFixed(2)}</span>
             </div>
             <div className={style.statCard} style={{ borderColor: theme.palette.secondary }}>
               <h3>Monthly Sales</h3>
-              <p className={style.statValue}>${monthStats.summary.revenue.toFixed(2)}</p>
-              <span className={style.statSub}>Profit: ${(monthStats.summary.profit || 0).toFixed(2)}</span>
+              <p className={style.statValue}>Ksh {monthStats.summary.revenue.toFixed(2)}</p>
+              <span className={style.statSub}>Profit: Ksh {(monthStats.summary.profit || 0).toFixed(2)}</span>
             </div>
             
             <div className={style.statCard} style={{ borderColor: theme.palette.secondary, backgroundColor: "var(--color-primary)", color: "white" }}>
               <h3>Inventory Valuation</h3>
-              <p className={style.statValue} style={{ color: "white" }}>${valuationStats.totalCostValue.toFixed(2)}</p>
-              <span className={style.statSub} style={{ color: "white", opacity: 0.9 }}>Retail Val: ${valuationStats.totalRetailValue.toFixed(2)} | Pot. Profit: ${valuationStats.potentialProfit.toFixed(2)}</span>
+              <p className={style.statValue} style={{ color: "white" }}>Ksh {valuationStats.totalCostValue.toFixed(2)}</p>
+              <span className={style.statSub} style={{ color: "white", opacity: 0.9 }}>Retail Val: Ksh {valuationStats.totalRetailValue.toFixed(2)} | Pot. Profit: Ksh {valuationStats.potentialProfit.toFixed(2)}</span>
             </div>
             
             <div className={style.statCard} style={{ borderColor: theme.palette.secondary }}>
@@ -139,8 +141,8 @@ const Dashboard: FC = () => {
             </div>
             <div className={style.statCard} style={{ borderColor: theme.palette.secondary, backgroundColor: "var(--color-success)", color: "white" }}>
               <h3>Net Profit (Month)</h3>
-              <p className={style.statValue} style={{ color: "white" }}>${netProfitStats.netProfit.toFixed(2)}</p>
-              <span className={style.statSub} style={{ color: "white", opacity: 0.9 }}>Gross: ${netProfitStats.grossProfit.toFixed(2)} | Exp: ${netProfitStats.expenses.toFixed(2)}</span>
+              <p className={style.statValue} style={{ color: "white" }}>Ksh {netProfitStats.netProfit.toFixed(2)}</p>
+              <span className={style.statSub} style={{ color: "white", opacity: 0.9 }}>Gross: Ksh {netProfitStats.grossProfit.toFixed(2)} | Exp: Ksh {netProfitStats.expenses.toFixed(2)}</span>
             </div>
           </div>
 
@@ -180,6 +182,29 @@ const Dashboard: FC = () => {
                   <Legend />
                   <Bar dataKey="qtySold" fill={theme.palette.error} name="Quantity Sold" />
                 </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className={style.chartContainer} style={{ backgroundColor: theme.palette.secondary + "11" }}>
+              <h3>Product Sales Distribution</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={productStats}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="qtySold"
+                    nameKey="_id"
+                    label={({ name, percent }) => `${name.substring(0, 10)} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {productStats.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip />
+                </PieChart>
               </ResponsiveContainer>
             </div>
           </div>

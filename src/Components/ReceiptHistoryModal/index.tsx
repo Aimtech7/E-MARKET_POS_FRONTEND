@@ -104,7 +104,7 @@ const ReceiptHistoryModal: FC<ReceiptHistoryModalProps> = ({ isOpen, onClose }) 
                         <td className={style.bold}>{inv.invoiceNumber}</td>
                         <td>{new Date(inv.timestamp).toLocaleDateString()}</td>
                         <td>{inv.cashier}</td>
-                        <td className={style.price}>${finalTotal.toFixed(2)}</td>
+                        <td className={style.price}>Ksh {finalTotal.toFixed(2)}</td>
                         <td>
                           <div className={style.actions}>
                             <button

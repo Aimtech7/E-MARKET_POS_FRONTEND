@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect, useRef } from "react";
 import CartTable from "../CartTable";
 import style from "./style.module.css";
 import useTheme from "../../context/Theme/useTheme";
@@ -9,7 +9,7 @@ import {
   faArrowRightLong,
 } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { chooseCart } from "../../store/Actions";
+import { chooseCart, createCart } from "../../store/Actions";
 import { RootState } from "../../store/Reducers";
 interface props {
   width?: string;
@@ -20,15 +20,34 @@ const Aside: FC<props> = ({ width }) => {
   const carts = useSelector<RootState>((state) => state.cartsReducer) as Cart[];
   const theme = useTheme();
   const dispatch = useDispatch();
+  const userNavigatedBack = useRef<boolean>(false);
+
   const chooseOrderHandler = (id: string) => {
     dispatch(chooseCart(id));
     setShow(id);
   };
+
+  useEffect(() => {
+    if (show === "" && !userNavigatedBack.current) {
+      if (carts.length > 0) {
+        chooseOrderHandler(carts[0].cartId);
+      } else {
+        const newCartId = new Date().getTime().toString();
+        dispatch(createCart(newCartId));
+        chooseOrderHandler(newCartId);
+      }
+    }
+    if (show !== "") {
+      userNavigatedBack.current = false;
+    }
+  }, [show, carts, dispatch]);
+
   const removeOrderHandler = () => {
     setShow("");
     dispatch(chooseCart(""));
   };
   const backwardHandler = () =>{
+    userNavigatedBack.current = true;
     setShow("")
     dispatch(chooseCart(""));
   }

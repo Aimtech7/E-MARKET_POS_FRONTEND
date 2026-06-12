@@ -207,15 +207,15 @@ const SalesPage: FC = () => {
       <div className={style.analyticsGrid}>
         <div className={style.card} style={{ backgroundColor: theme.palette.primary + "11", borderLeft: `4px solid ${theme.palette.primary}` }}>
           <h3>Gross Sales</h3>
-          <p className={style.statValue}>${(analytics.grossSales || 0).toFixed(2)}</p>
+          <p className={style.statValue}>Ksh {(analytics.grossSales || 0).toFixed(2)}</p>
         </div>
         <div className={style.card} style={{ backgroundColor: theme.palette.error + "11", borderLeft: `4px solid ${theme.palette.error}` }}>
           <h3>Total Refunds</h3>
-          <p className={style.statValue}>-${(analytics.totalRefunds || 0).toFixed(2)}</p>
+          <p className={style.statValue}>-Ksh {(analytics.totalRefunds || 0).toFixed(2)}</p>
         </div>
         <div className={style.card} style={{ backgroundColor: "#2e7d3211", borderLeft: "4px solid #2e7d32" }}>
           <h3>Net Sales</h3>
-          <p className={style.statValue} style={{ color: "#2e7d32" }}>${(analytics.netSales || 0).toFixed(2)}</p>
+          <p className={style.statValue} style={{ color: "#2e7d32" }}>Ksh {(analytics.netSales || 0).toFixed(2)}</p>
         </div>
       </div>
 
@@ -333,7 +333,7 @@ const SalesPage: FC = () => {
                     </span>
                   </td>
                   <td className={`${style.amount} ${style[txn.type]}`}>
-                    ${txn.totalAmount.toFixed(2)}
+                    Ksh {txn.totalAmount.toFixed(2)}
                   </td>
                   <td>
                     {txn.type === "sale" ? (
@@ -371,7 +371,7 @@ const SalesPage: FC = () => {
                   <div key={item.product} className={style.refundRow} style={{ borderBottom: `1px solid ${theme.palette.secondary}22` }}>
                     <div className={style.rowProductInfo}>
                       <span className={style.bold}>{item.productName}</span>
-                      <span className={style.rowSubText}>Price: ${item.price.toFixed(2)} | Max: {item.maxQty}</span>
+                      <span className={style.rowSubText}>Price: Ksh {item.price.toFixed(2)} | Max: {item.maxQty}</span>
                     </div>
                     <div className={style.rowQtyActions}>
                       <button

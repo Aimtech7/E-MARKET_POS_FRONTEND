@@ -47,7 +47,7 @@ const PrintBarcodeModal: FC<PrintBarcodeModalProps> = ({ product, isOpen, onClos
               alt="Barcode" 
               style={{ width: "100%", maxHeight: "80px", objectFit: "contain" }} 
             />
-            <p style={{ margin: "5px 0 0 0", fontSize: "12px" }}>${product.productPrice.toFixed(2)}</p>
+            <p style={{ margin: "5px 0 0 0", fontSize: "12px" }}>Ksh {product.productPrice.toFixed(2)}</p>
           </div>
         </div>
 

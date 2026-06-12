@@ -57,8 +57,8 @@ export const PrintableInvoice = forwardRef<HTMLDivElement, PrintableInvoiceProps
                   <span className={style.unit}> ({item.unitOfMeasure.unitOfMeasureName})</span>
                 </td>
                 <td className={style.centerAlign}>{item.qty}</td>
-                <td className={style.rightAlign}>${item.price.toFixed(2)}</td>
-                <td className={style.rightAlign}>${(item.qty * item.price).toFixed(2)}</td>
+                <td className={style.rightAlign}>Ksh {item.price.toFixed(2)}</td>
+                <td className={style.rightAlign}>Ksh {(item.qty * item.price).toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
@@ -69,28 +69,28 @@ export const PrintableInvoice = forwardRef<HTMLDivElement, PrintableInvoiceProps
         <div className={style.totals}>
           <div className={style.row}>
             <span>Subtotal:</span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>Ksh {subtotal.toFixed(2)}</span>
           </div>
           <div className={style.row}>
             <span>Discount ({(cart.discount * 100).toFixed(0)}%):</span>
-            <span>-${discountAmount.toFixed(2)}</span>
+            <span>-Ksh {discountAmount.toFixed(2)}</span>
           </div>
           <div className={style.row}>
             <span>Tax ({(cart.tax * 100).toFixed(0)}%):</span>
-            <span>+${taxAmount.toFixed(2)}</span>
+            <span>+Ksh {taxAmount.toFixed(2)}</span>
           </div>
           <div className={`${style.row} ${style.bold}`}>
             <span>Total:</span>
-            <span>${finalTotal.toFixed(2)}</span>
+            <span>Ksh {finalTotal.toFixed(2)}</span>
           </div>
           <div className={style.separator}></div>
           <div className={style.row}>
             <span>Paid:</span>
-            <span>${invoice.amountPaid.toFixed(2)}</span>
+            <span>Ksh {invoice.amountPaid.toFixed(2)}</span>
           </div>
           <div className={style.row}>
             <span>Change:</span>
-            <span>${invoice.changeGiven.toFixed(2)}</span>
+            <span>Ksh {invoice.changeGiven.toFixed(2)}</span>
           </div>
         </div>
 

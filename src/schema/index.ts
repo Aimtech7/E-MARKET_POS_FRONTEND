@@ -33,17 +33,8 @@ export const productShcema = yup.object().shape({
 });
 
 export const userSchema = yup.object().shape({
-  username: yup
-    .string()
-    .min(5, "Username must be at least 5 charactors")
-    .required("Username is requied")
-    .matches(/^\S*$/, "Whitespace is not allowed")
-    .matches(/[A-z]/, "The username must be an charactor"),
-  password: yup
-    .string()
-    .min(8, "password must be at least 8 charactors")
-    .required("password is requied")
-    .matches(/^\S*$/, "Whitespace is not allowed"),
+  username: yup.string().required("Username is required"),
+  password: yup.string().required("Password is required"),
 });
 
 export const testSchema = yup.object().shape({

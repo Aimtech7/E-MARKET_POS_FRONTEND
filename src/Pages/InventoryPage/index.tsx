@@ -380,7 +380,7 @@ const InventoryPage: FC = () => {
                         <td>{p.unitOfMeasure?.unitOfMeasureName || "Unit"}</td>
                         <td className={isLowStock ? style.lowText : ""}>{p.stockQuantity}</td>
                         <td>{p.reorderLevel}</td>
-                        <td>${p.productPrice.toFixed(2)}</td>
+                        <td>Ksh {p.productPrice.toFixed(2)}</td>
                         <td>
                           {isOutOfStock ? (
                             <span className={`${style.alertBadge} ${style.out}`}>OUT OF STOCK</span>
@@ -621,7 +621,7 @@ const InventoryPage: FC = () => {
                       <td className={style.bold}>{po.poNumber}</td>
                       <td>{new Date(po.timestamp).toLocaleDateString()}</td>
                       <td>{po.supplier?.supplierName || "Deleted Supplier"}</td>
-                      <td className={style.price}>${po.totalAmount.toFixed(2)}</td>
+                      <td className={style.price}>Ksh {po.totalAmount.toFixed(2)}</td>
                       <td>
                         <span className={`${style.poBadge} ${style[po.status]}`}>{po.status}</span>
                       </td>
@@ -783,7 +783,7 @@ const InventoryPage: FC = () => {
                       onChange={(e) => handlePOItemChange(idx, "price", e.target.value)}
                       className={style.dateInput}
                       style={{ flex: 1, minWidth: "70px" }}
-                      placeholder="Unit Price ($)"
+                      placeholder="Unit Price (Ksh)"
                     />
 
                     <button onClick={() => handleRemovePOItem(idx)} className={style.removeBtn}>&times;</button>
@@ -794,7 +794,7 @@ const InventoryPage: FC = () => {
               <div className={style.poSummary} style={{ marginTop: "15px" }}>
                 <span>Total PO Amount:</span>
                 <span className={style.bold}>
-                  ${poItems.reduce((acc, i) => acc + i.qty * i.price, 0).toFixed(2)}
+                  Ksh {poItems.reduce((acc, i) => acc + i.qty * i.price, 0).toFixed(2)}
                 </span>
               </div>
 

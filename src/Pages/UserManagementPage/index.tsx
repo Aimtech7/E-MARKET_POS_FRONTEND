@@ -32,7 +32,7 @@ const UserManagementPage = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5500/api/users", {
+      const response = await axios.get("http://localhost:5500/user/users", {
         headers: {
           Authorization: `Bearer ${cookies.auth?.token}`
         }
@@ -55,7 +55,7 @@ const UserManagementPage = () => {
   const handleAddUser = async (e: any) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5500/api/users/create", formData, {
+      await axios.post("http://localhost:5500/user/create", formData, {
         headers: {
           Authorization: `Bearer ${cookies.auth?.token}`
         }
@@ -72,7 +72,7 @@ const UserManagementPage = () => {
   const handleEditUser = async (e: any) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5500/api/users/update/${currentUser.username}`, formData, {
+      await axios.put(`http://localhost:5500/user/update/${currentUser.username}`, formData, {
         headers: {
           Authorization: `Bearer ${cookies.auth?.token}`
         }
@@ -89,7 +89,7 @@ const UserManagementPage = () => {
   const handleResetPassword = async (e: any) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5500/api/users/reset-password/${currentUser.username}`, { newPassword: formData.password }, {
+      await axios.put(`http://localhost:5500/user/reset-password/${currentUser.username}`, { newPassword: formData.password }, {
         headers: {
           Authorization: `Bearer ${cookies.auth?.token}`
         }
@@ -105,7 +105,7 @@ const UserManagementPage = () => {
 
   const toggleStatus = async (user: any) => {
     try {
-      await axios.put(`http://localhost:5500/api/users/toggle-status/${user.username}`, { isActive: !user.isActive }, {
+      await axios.put(`http://localhost:5500/user/toggle-status/${user.username}`, { isActive: !user.isActive }, {
         headers: {
           Authorization: `Bearer ${cookies.auth?.token}`
         }
@@ -120,7 +120,7 @@ const UserManagementPage = () => {
   const deleteUser = async (user: any) => {
     if (!window.confirm(`Are you sure you want to delete ${user.username}?`)) return;
     try {
-      await axios.delete(`http://localhost:5500/api/users/delete/${user.username}`, {
+      await axios.delete(`http://localhost:5500/user/delete/${user.username}`, {
         headers: {
           Authorization: `Bearer ${cookies.auth?.token}`
         }

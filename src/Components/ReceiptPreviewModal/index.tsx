@@ -62,7 +62,7 @@ const ReceiptPreviewModal: FC<ReceiptPreviewModalProps> = ({ receipt, onClose })
                     <tr key={idx}>
                       <td style={{ textAlign: "left" }}>{item.productName.substring(0, 15)}</td>
                       <td style={{ textAlign: "center" }}>{item.qty}</td>
-                      <td style={{ textAlign: "right" }}>${(item.qty * item.unitPrice).toFixed(2)}</td>
+                      <td style={{ textAlign: "right" }}>Ksh {(item.qty * item.unitPrice).toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -73,34 +73,34 @@ const ReceiptPreviewModal: FC<ReceiptPreviewModalProps> = ({ receipt, onClose })
               <div className={style.totals}>
                 <div className={style.row}>
                   <span>Subtotal:</span>
-                  <span>${receipt.subtotal.toFixed(2)}</span>
+                  <span>Ksh {receipt.subtotal.toFixed(2)}</span>
                 </div>
                 {receipt.discount > 0 && (
                   <div className={style.row}>
                     <span>Discount:</span>
-                    <span>-${receipt.discount.toFixed(2)}</span>
+                    <span>-Ksh {receipt.discount.toFixed(2)}</span>
                   </div>
                 )}
                 {receipt.tax > 0 && (
                   <div className={style.row}>
                     <span>Tax:</span>
-                    <span>+${receipt.tax.toFixed(2)}</span>
+                    <span>+Ksh {receipt.tax.toFixed(2)}</span>
                   </div>
                 )}
                 <div className={`${style.row} ${style.grandTotal}`}>
                   <span>TOTAL:</span>
-                  <span>${receipt.grandTotal.toFixed(2)}</span>
+                  <span>Ksh {receipt.grandTotal.toFixed(2)}</span>
                 </div>
               </div>
 
               <div className={style.paymentInfo}>
                 <div className={style.row}>
                   <span>Paid ({receipt.paymentMethod}):</span>
-                  <span>${receipt.amountPaid.toFixed(2)}</span>
+                  <span>Ksh {receipt.amountPaid.toFixed(2)}</span>
                 </div>
                 <div className={style.row}>
                   <span>Change:</span>
-                  <span>${receipt.changeGiven.toFixed(2)}</span>
+                  <span>Ksh {receipt.changeGiven.toFixed(2)}</span>
                 </div>
               </div>
 
