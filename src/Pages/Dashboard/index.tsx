@@ -98,7 +98,6 @@ const Dashboard: FC = () => {
         <div className={style.adminSection}>
           <AIMAssistantWidget />
           
-          <div className={style.cardsGrid}>
           <h2 style={{ marginBottom: "20px" }}>Dashboard Overview</h2>
           
           {/* Summary Cards */}

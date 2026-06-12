@@ -2,7 +2,6 @@ import React, { FC, useEffect, useState } from "react";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 import useTheme from "../../context/Theme/useTheme";
-import Card from "../../Components/Card";
 
 const LoyaltyPage: FC = () => {
   const theme = useTheme();
@@ -27,8 +26,14 @@ const LoyaltyPage: FC = () => {
       <h2>Loyalty Program Dashboard</h2>
 
       <div style={{ display: "flex", gap: "20px", marginTop: "20px", flexWrap: "wrap" }}>
-        <Card title="Loyalty Revenue generated" value={`$${stats?.loyaltyRevenue?.toFixed(2) || "0.00"}`} />
-        <Card title="Outstanding Points" value={stats?.totalOutstandingPoints?.toString() || "0"} />
+        <div style={{ padding: "20px", borderRadius: "8px", backgroundColor: theme.palette.secondary + "22", border: "1px solid " + theme.palette.secondary, minWidth: "200px" }}>
+          <h4 style={{ margin: "0 0 8px 0", opacity: 0.7 }}>Loyalty Revenue Generated</h4>
+          <p style={{ margin: 0, fontSize: "1.8rem", fontWeight: "bold" }}>${stats?.loyaltyRevenue?.toFixed(2) || "0.00"}</p>
+        </div>
+        <div style={{ padding: "20px", borderRadius: "8px", backgroundColor: theme.palette.secondary + "22", border: "1px solid " + theme.palette.secondary, minWidth: "200px" }}>
+          <h4 style={{ margin: "0 0 8px 0", opacity: 0.7 }}>Outstanding Points</h4>
+          <p style={{ margin: 0, fontSize: "1.8rem", fontWeight: "bold" }}>{stats?.totalOutstandingPoints?.toString() || "0"}</p>
+        </div>
       </div>
 
       <div style={{ marginTop: "40px" }}>

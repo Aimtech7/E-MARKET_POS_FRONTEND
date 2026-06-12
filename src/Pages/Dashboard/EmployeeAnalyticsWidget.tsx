@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import axios from "axios";
 import { useCookies } from "react-cookie";
-import useTheme from "../../../context/Theme/useTheme";
+import useTheme from "../../context/Theme/useTheme";
 
 const EmployeeAnalyticsWidget: FC = () => {
   const [employees, setEmployees] = useState<any[]>([]);

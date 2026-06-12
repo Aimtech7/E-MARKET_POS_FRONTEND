@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import axios from "axios";
 import { useCookies } from "react-cookie";
-import useTheme from "../../../context/Theme/useTheme";
+import useTheme from "../../context/Theme/useTheme";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRobot, faCheckCircle, faExclamationTriangle, faInfoCircle, faArrowTrendUp, faArrowTrendDown } from "@fortawesome/free-solid-svg-icons";
 
