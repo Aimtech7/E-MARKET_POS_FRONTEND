@@ -30,7 +30,7 @@ const ExpensePage: FC = () => {
 
   const fetchExpenses = () => {
     axios
-      .get("http://localhost:5500/expenses", {
+      .get("/expenses", {
         headers: { Authorization: "Bearer " + cookies.auth.token },
       })
       .then((res) => setExpenses(res.data))
@@ -39,7 +39,7 @@ const ExpensePage: FC = () => {
 
   const fetchSummary = () => {
     axios
-      .get(`http://localhost:5500/expenses/summary?period=${period}`, {
+      .get(`/expenses/summary?period=${period}`, {
         headers: { Authorization: "Bearer " + cookies.auth.token },
       })
       .then((res) => setSummary(res.data))
@@ -106,7 +106,7 @@ const ExpensePage: FC = () => {
                       <Button size="normal" variant="primary" onClick={() => setSelectedExpense(e)}>Edit</Button>
                       <Button size="normal" variant="danger" onClick={() => {
                         if(window.confirm("Delete this expense?")) {
-                          axios.delete(`http://localhost:5500/expenses/${e._id}`, {
+                          axios.delete(`/expenses/${e._id}`, {
                             headers: { Authorization: "Bearer " + cookies.auth.token },
                           }).then(() => {
                             snack.onResponse({ message: "Expense deleted", status: 200 });
@@ -136,7 +136,7 @@ const ExpensePage: FC = () => {
             onSubmit={(values, { resetForm }) => {
               if (selectedExpense) {
                 axios
-                  .put(`http://localhost:5500/expenses/${selectedExpense._id}`, values, {
+                  .put(`/expenses/${selectedExpense._id}`, values, {
                     headers: { Authorization: "Bearer " + cookies.auth.token },
                   })
                   .then((res) => {
@@ -149,7 +149,7 @@ const ExpensePage: FC = () => {
                   .catch((err) => snack.onResponse({ message: err.response?.data?.message || "Error", status: 500 }));
               } else {
                 axios
-                  .post("http://localhost:5500/expenses", values, {
+                  .post("/expenses", values, {
                     headers: { Authorization: "Bearer " + cookies.auth.token },
                   })
                   .then((res) => {

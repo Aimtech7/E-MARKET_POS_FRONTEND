@@ -32,7 +32,7 @@ const SettingsPage: FC = () => {
     if (!isAdmin) return;
     
     setLoading(true);
-    axios.get("http://localhost:5500/settings", {
+    axios.get("/settings", {
       headers: { Authorization: "barear " + cookies.auth?.token }
     }).then(res => {
       const data = res.data;
@@ -44,7 +44,7 @@ const SettingsPage: FC = () => {
       setCurrency(data.currency || "Ksh");
       setReceiptFooter(data.receiptFooter || "");
       if (data.logo) {
-        setLogoUrl("http://localhost:5500/" + data.logo);
+        setLogoUrl("/" + data.logo);
       }
     }).catch(err => {
       console.error(err);
@@ -79,7 +79,7 @@ const SettingsPage: FC = () => {
         formData.append("logo", logoFile);
       }
 
-      await axios.put("http://localhost:5500/settings", formData, {
+      await axios.put("/settings", formData, {
         headers: { Authorization: "barear " + cookies.auth?.token }
       });
       snackbar.onResponse({ message: "Store settings saved successfully.", status: 200 });

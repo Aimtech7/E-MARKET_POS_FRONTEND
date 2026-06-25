@@ -14,7 +14,7 @@ const LoyaltyPage: FC = () => {
 
   const fetchLoyaltyStats = () => {
     axios
-      .get("http://localhost:5500/loyalty/dashboard", {
+      .get("/loyalty/dashboard", {
         headers: { Authorization: "Bearer " + cookies.auth.token },
       })
       .then((res) => setStats(res.data))

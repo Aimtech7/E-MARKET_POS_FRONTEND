@@ -44,7 +44,7 @@ const AuthenticationPage: FC = () => {
           onSubmit={(values) => {
             setLoading(true);
             axios
-              .post("http://localhost:5500/user/login", {
+              .post("/user/login", {
                 username: values.username,
                 password: values.password,
               })
@@ -63,7 +63,7 @@ const AuthenticationPage: FC = () => {
                   errorStatus = err.response.status || 500;
                 }
                 snack.onResponse({
-                  message: errorMessage,
+                  message: `${errorMessage}. Click 'Work Offline' below to continue.`,
                   status: errorStatus,
                 });
               });
@@ -71,7 +71,7 @@ const AuthenticationPage: FC = () => {
           initialValues={{ username: "", password: "" }}
           validationSchema={userSchema}
         >
-          {({ submitForm }) => (
+          {({ submitForm, values }) => (
             <Form className={style.form}>
               <div className={style.formHeader}>
                 <h2>Welcome Back</h2>
@@ -112,6 +112,40 @@ const AuthenticationPage: FC = () => {
               >
                 Sign In
               </Button>
+
+              <div style={{ marginTop: '20px', padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px dashed #444' }}>
+                <p style={{ margin: '0 0 10px 0', fontSize: '12px', textAlign: 'center', opacity: 0.8 }}>
+                  ⚡ No Internet or Database Disconnected?
+                </p>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    fullWidth
+                    onClick={() => {
+                      const uname = values.username || "cashier";
+                      setCookies("auth", { username: uname, fullName: uname, role: "cashier", admin: false, token: "OFFLINE_" + Date.now() }, { expires: new Date(Date.now() + 7200 * 1000) });
+                      snack.onResponse({ message: "Entered Offline/Local Mode as Cashier", status: 201 });
+                      navigate("/");
+                    }}
+                  >
+                    Work Offline (Cashier)
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="warning"
+                    fullWidth
+                    onClick={() => {
+                      const uname = values.username || "admin";
+                      setCookies("auth", { username: uname, fullName: uname, role: "admin", admin: true, token: "OFFLINE_" + Date.now() }, { expires: new Date(Date.now() + 7200 * 1000) });
+                      snack.onResponse({ message: "Entered Offline/Local Mode as Admin", status: 201 });
+                      navigate("/");
+                    }}
+                  >
+                    Work Offline (Admin)
+                  </Button>
+                </div>
+              </div>
             </Form>
           )}
         </Formik>

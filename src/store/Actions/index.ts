@@ -129,7 +129,7 @@ export const set_products = (data: any[]) => {
     return {
       id: p.id,
       title: p.productName,
-      media: "http://localhost:5500/" + p.productImage,
+      media: "/" + p.productImage,
       category: p.productCategory,
       unitOfMeasure: p.unitOfMeasure,
       price: p.productPrice,

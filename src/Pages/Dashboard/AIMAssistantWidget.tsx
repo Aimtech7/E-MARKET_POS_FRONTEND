@@ -13,7 +13,7 @@ const AIMAssistantWidget: FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5500/analytics/ai/insights", {
+      .get("/analytics/ai/insights", {
         headers: { Authorization: "barear " + cookies.auth.token },
       })
       .then((res) => {

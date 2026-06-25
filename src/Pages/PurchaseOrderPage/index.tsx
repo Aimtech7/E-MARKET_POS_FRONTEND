@@ -54,16 +54,16 @@ const PurchaseOrderPage: FC = () => {
   const config = { headers: { Authorization: "Bearer " + cookies.auth?.token } };
 
   const fetchPOs = () => {
-    axios.get("http://localhost:5500/po", config)
+    axios.get("/po", config)
       .then(res => setPos(res.data))
       .catch(err => snack.onResponse({ message: "Failed to load POs", status: 500 }));
   };
 
   const fetchDependencies = () => {
-    axios.get("http://localhost:5500/supplier/suppliers", config)
+    axios.get("/supplier/suppliers", config)
       .then(res => setSuppliers(res.data.filter((s:any) => s.isActive !== false)));
     
-    axios.get("http://localhost:5500/product/products", config)
+    axios.get("/product/products", config)
       .then(res => setProducts(res.data));
   };
 
@@ -84,7 +84,7 @@ const PurchaseOrderPage: FC = () => {
       totalAmount
     };
 
-    axios.post("http://localhost:5500/po", payload, config)
+    axios.post("/po", payload, config)
       .then(res => {
         snack.onResponse({ message: "PO Created", status: 201 });
         setShowCreate(false);
@@ -96,7 +96,7 @@ const PurchaseOrderPage: FC = () => {
   };
 
   const handleUpdateStatus = (id: string, newStatus: string) => {
-    axios.put(`http://localhost:5500/po/${id}/status`, { status: newStatus }, config)
+    axios.put(`/po/${id}/status`, { status: newStatus }, config)
       .then(res => {
         snack.onResponse({ message: `PO marked as ${newStatus}`, status: 200 });
         setSelectedPO(null);
@@ -107,7 +107,7 @@ const PurchaseOrderPage: FC = () => {
 
   const handleDelete = (id: string) => {
     if (!window.confirm("Are you sure you want to delete this PO?")) return;
-    axios.delete(`http://localhost:5500/po/${id}`, config)
+    axios.delete(`/po/${id}`, config)
       .then(res => {
         snack.onResponse({ message: "PO Deleted", status: 200 });
         setSelectedPO(null);

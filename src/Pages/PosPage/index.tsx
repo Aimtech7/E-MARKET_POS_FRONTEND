@@ -56,7 +56,7 @@ const PosPage: FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5500/category/categories", {
+      .get("/category/categories", {
         headers: { Authorization: "Bearer " + cookies.auth?.token }
       })
       .then((res) => dispatch(set_categories(res.data)))
@@ -64,7 +64,7 @@ const PosPage: FC = () => {
         alert(err.response?.data?.message || err.message);
       });
     axios
-      .get("http://localhost:5500/product/products", {
+      .get("/product/products", {
         headers: { Authorization: "Bearer " + cookies.auth?.token }
       })
       .then((res) => dispatch(set_products(res.data)))
@@ -72,7 +72,7 @@ const PosPage: FC = () => {
         alert(err.response?.data?.message || err.message);
       });
     axios
-      .get("http://localhost:5500/unit/units", {
+      .get("/unit/units", {
         headers: { Authorization: "Bearer " + cookies.auth?.token }
       })
       .then((res) => dispatch(set_units(res.data)))

@@ -16,7 +16,7 @@ const NotificationPage: FC = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
 
   const fetchNotifications = () => {
-    axios.get("http://localhost:5500/notifications", {
+    axios.get("/notifications", {
       headers: { Authorization: "barear " + cookies.auth?.token }
     }).then(res => {
       setNotifications(res.data);
@@ -31,7 +31,7 @@ const NotificationPage: FC = () => {
   }, [cookies.auth?.token]);
 
   const markAsRead = (id: string) => {
-    axios.put(`http://localhost:5500/notifications/${id}/read`, {}, {
+    axios.put(`/notifications/${id}/read`, {}, {
       headers: { Authorization: "barear " + cookies.auth?.token }
     }).then(() => {
       fetchNotifications();
@@ -39,7 +39,7 @@ const NotificationPage: FC = () => {
   };
 
   const markAllAsRead = () => {
-    axios.put(`http://localhost:5500/notifications/mark-all-read`, {}, {
+    axios.put(`/notifications/mark-all-read`, {}, {
       headers: { Authorization: "barear " + cookies.auth?.token }
     }).then(() => {
       fetchNotifications();

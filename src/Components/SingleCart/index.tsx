@@ -97,7 +97,7 @@ const SingleCart: FC<props> = ({ onClick, orderId, onRemoveOrder }) => {
   const handleSearchCustomer = async () => {
     if (!customerSearch) return;
     try {
-      const res = await axios.get(`http://localhost:5500/customer/search?query=${customerSearch}`, {
+      const res = await axios.get(`/customer/search?query=${customerSearch}`, {
         headers: { Authorization: "barear " + cookies.auth?.token }
       });
       setSearchResults(res.data);

@@ -32,7 +32,7 @@ const ReceiptHistoryModal: FC<ReceiptHistoryModalProps> = ({ isOpen, onClose }) 
     setLoading(true);
     const token = cookies.auth?.token;
     try {
-      const res = await axios.get("http://localhost:5500/invoice", {
+      const res = await axios.get("/invoice", {
         headers: { Authorization: "barear " + token },
       });
       setInvoices(res.data);
@@ -61,7 +61,7 @@ const ReceiptHistoryModal: FC<ReceiptHistoryModalProps> = ({ isOpen, onClose }) 
   };
 
   const handleDownloadPDF = (inv: Invoice) => {
-    window.open(`http://localhost:5500/uploads/invoices/${inv.invoiceNumber}.pdf`, "_blank");
+    window.open(`/uploads/invoices/${inv.invoiceNumber}.pdf`, "_blank");
   };
 
   if (!isOpen) return null;

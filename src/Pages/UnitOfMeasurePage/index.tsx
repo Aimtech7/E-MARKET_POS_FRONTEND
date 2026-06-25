@@ -48,7 +48,7 @@ const UnitOfMeasurePage: FC = () => {
   };
   useEffect(() => {
     axios
-      .get("http://localhost:5500/unit/units")
+      .get("/unit/units")
       .then((res) => dispatch(set_units(res.data)))
       .catch((err) => {
         alert(err.response.message);
@@ -94,7 +94,7 @@ const UnitOfMeasurePage: FC = () => {
           <Formik
             onSubmit={(values) => {
               axios
-                .post("http://localhost:5500/unit/new", {
+                .post("/unit/new", {
                   unitOfMeasureName: values.unitOfMeasureName,
                   baseUnitOfMeasure: values.baseOfUnitOfMeasure,
                   conversionFactor: values.CFB,
@@ -156,7 +156,7 @@ const UnitOfMeasurePage: FC = () => {
             onSubmit={(values) => {
               axios
                 .post(
-                  "http://localhost:5500/unit/update/" + values.selectedUnit,
+                  "/unit/update/" + values.selectedUnit,
                   {
                     unitOfMeasureName: values.unitOfMeasureName,
                     baseUnitOfMeasure: values.baseOfUnitOfMeasure,
@@ -254,7 +254,7 @@ const UnitOfMeasurePage: FC = () => {
             onSubmit={(values) => {
               axios
                 .delete(
-                  "http://localhost:5500/unit/delete/" +
+                  "/unit/delete/" +
                     values.unitOfMeasureName
                 )
                 .then((res) => {

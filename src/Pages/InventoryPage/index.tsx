@@ -53,7 +53,7 @@ const InventoryPage: FC = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5500/product/products");
+      const res = await axios.get("/product/products");
       setProducts(res.data);
     } catch (err) {
       console.error(err);
@@ -65,7 +65,7 @@ const InventoryPage: FC = () => {
   const fetchInventoryLogs = async () => {
     const token = cookies.auth?.token;
     try {
-      const res = await axios.get("http://localhost:5500/inventory/logs", {
+      const res = await axios.get("/inventory/logs", {
         headers: { Authorization: "barear " + token },
       });
       setInventoryLogs(res.data);
@@ -77,7 +77,7 @@ const InventoryPage: FC = () => {
   const fetchSuppliers = async () => {
     const token = cookies.auth?.token;
     try {
-      const res = await axios.get("http://localhost:5500/supplier", {
+      const res = await axios.get("/supplier", {
         headers: { Authorization: "barear " + token },
       });
       setSuppliers(res.data);
@@ -89,7 +89,7 @@ const InventoryPage: FC = () => {
   const fetchPOs = async () => {
     const token = cookies.auth?.token;
     try {
-      const res = await axios.get("http://localhost:5500/po", {
+      const res = await axios.get("/po", {
         headers: { Authorization: "barear " + token },
       });
       setPurchaseOrders(res.data);
@@ -124,9 +124,9 @@ const InventoryPage: FC = () => {
     const token = cookies.auth?.token;
 
     try {
-      let endpoint = "http://localhost:5500/inventory/adjust";
-      if (adjustType === "add") endpoint = "http://localhost:5500/inventory/add";
-      if (adjustType === "remove") endpoint = "http://localhost:5500/inventory/remove";
+      let endpoint = "/inventory/adjust";
+      if (adjustType === "add") endpoint = "/inventory/add";
+      if (adjustType === "remove") endpoint = "/inventory/remove";
 
       await axios.post(
         endpoint,
@@ -166,7 +166,7 @@ const InventoryPage: FC = () => {
 
     try {
       await axios.post(
-        "http://localhost:5500/supplier",
+        "/supplier",
         {
           supplierName: supName,
           contactName: supContact,
@@ -200,7 +200,7 @@ const InventoryPage: FC = () => {
   const handleDeleteSupplier = async (id: string) => {
     const token = cookies.auth?.token;
     try {
-      await axios.delete(`http://localhost:5500/supplier/${id}`, {
+      await axios.delete(`/supplier/${id}`, {
         headers: { Authorization: "barear " + token },
       });
       snackbar.onResponse({ message: "Supplier deleted.", status: 200 });
@@ -258,7 +258,7 @@ const InventoryPage: FC = () => {
 
     try {
       await axios.post(
-        "http://localhost:5500/po",
+        "/po",
         {
           supplier: selectedSupplier,
           items: poItems,
@@ -283,7 +283,7 @@ const InventoryPage: FC = () => {
     const token = cookies.auth?.token;
     try {
       await axios.put(
-        `http://localhost:5500/po/${id}/status`,
+        `/po/${id}/status`,
         { status: newStatus },
         {
           headers: { Authorization: "barear " + token },
@@ -374,7 +374,7 @@ const InventoryPage: FC = () => {
 
                     return (
                       <tr key={p._id} style={{ borderBottom: `1px solid ${theme.palette.secondary}22` }}>
-                        <td><img src={"http://localhost:5500/" + p.productImage} alt={p.productName} style={{ width: "40px", height: "40px", borderRadius: "4px", objectFit: "cover" }} /></td>
+                        <td><img src={"/" + p.productImage} alt={p.productName} style={{ width: "40px", height: "40px", borderRadius: "4px", objectFit: "cover" }} /></td>
                         <td className={style.bold}>{p.productName}</td>
                         <td>{p.productCategory?.categoryName || "Uncategorized"}</td>
                         <td>{p.unitOfMeasure?.unitOfMeasureName || "Unit"}</td>
@@ -424,7 +424,7 @@ const InventoryPage: FC = () => {
                               <button
                                 onClick={async () => {
                                   try {
-                                    await axios.delete(`http://localhost:5500/product/${p._id}`, { headers: { Authorization: "barear " + cookies.auth?.token } });
+                                    await axios.delete(`/product/${p._id}`, { headers: { Authorization: "barear " + cookies.auth?.token } });
                                     snackbar.onResponse({ message: "Product archived.", status: 200 });
                                     fetchProducts();
                                   } catch (e) {

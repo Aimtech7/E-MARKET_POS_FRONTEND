@@ -36,12 +36,12 @@ const ReportsPage: FC = () => {
   const fetchChartData = async () => {
     setLoadingCharts(true);
     try {
-      const response = await axios.get("http://localhost:5500/reports/chart", {
+      const response = await axios.get("/reports/chart", {
         headers: { Authorization: "barear " + cookies.auth?.token }
       });
       setChartData(response.data);
 
-      const prodRes = await axios.get("http://localhost:5500/analytics/products", {
+      const prodRes = await axios.get("/analytics/products", {
         headers: { Authorization: "barear " + cookies.auth?.token }
       });
       setProductStats(prodRes.data);
@@ -71,7 +71,7 @@ const ReportsPage: FC = () => {
     setDownloading(true);
     try {
       const token = cookies.auth?.token;
-      const response = await axios.get(`http://localhost:5500/reports/sales/csv?start=${startDate}&end=${endDate}`, {
+      const response = await axios.get(`/reports/sales/csv?start=${startDate}&end=${endDate}`, {
         headers: { Authorization: `barear ${token}` },
         responseType: 'blob',
       });
@@ -96,7 +96,7 @@ const ReportsPage: FC = () => {
     setDownloading(true);
     try {
       const token = cookies.auth?.token;
-      const response = await axios.get(`http://localhost:5500/reports/inventory/csv`, {
+      const response = await axios.get(`/reports/inventory/csv`, {
         headers: { Authorization: `barear ${token}` },
         responseType: 'blob',
       });
@@ -126,7 +126,7 @@ const ReportsPage: FC = () => {
     setDownloading(true);
     try {
       const token = cookies.auth?.token;
-      const response = await axios.get(`http://localhost:5500/reports/profit/csv?start=${startDate}&end=${endDate}`, {
+      const response = await axios.get(`/reports/profit/csv?start=${startDate}&end=${endDate}`, {
         headers: { Authorization: `barear ${token}` },
         responseType: 'blob',
       });
@@ -242,7 +242,7 @@ const ReportsPage: FC = () => {
                     fill="#8884d8"
                     dataKey="qtySold"
                     nameKey="_id"
-                    label={({ name, percent }) => `${name.substring(0, 10)} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) => `${(name || "").substring(0, 10)} ${((percent || 0) * 100).toFixed(0)}%`}
                   >
                     {productStats.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

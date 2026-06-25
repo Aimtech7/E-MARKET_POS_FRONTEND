@@ -25,7 +25,7 @@ const AuditLogsPage: FC = () => {
   const fetchLogs = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5500/audit", {
+      const response = await axios.get("/audit", {
         headers: { Authorization: "barear " + cookies.auth?.token }
       });
       setLogs(response.data);

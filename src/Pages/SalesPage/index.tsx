@@ -55,7 +55,7 @@ const SalesPage: FC = () => {
       if (endDate) params.push(`endDate=${endDate}`);
       const queryStr = params.length > 0 ? `?${params.join("&")}` : "";
 
-      const res = await axios.get(`http://localhost:5500/transaction${queryStr}`, {
+      const res = await axios.get(`/transaction${queryStr}`, {
         headers: { Authorization: "barear " + token },
       });
       setTransactions(res.data);
@@ -72,7 +72,7 @@ const SalesPage: FC = () => {
   const fetchAnalytics = async () => {
     const token = cookies.auth?.token;
     try {
-      const res = await axios.get("http://localhost:5500/transaction/analytics", {
+      const res = await axios.get("/transaction/analytics", {
         headers: { Authorization: "barear " + token },
       });
       setAnalytics(res.data);
@@ -134,7 +134,7 @@ const SalesPage: FC = () => {
 
     try {
       await axios.post(
-        "http://localhost:5500/transaction/refund",
+        "/transaction/refund",
         {
           invoiceId: selectedTxn.invoice._id,
           refundedItems: itemsToRefund.map((i) => ({ product: i.product, qty: i.qty })),

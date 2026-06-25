@@ -20,7 +20,7 @@ const ClosurePage: FC = () => {
 
   const fetchClosureData = async () => {
     try {
-      const res = await axios.get("http://localhost:5500/closures/data", {
+      const res = await axios.get("/closures/data", {
         headers: { Authorization: "barear " + cookies.auth?.token },
       });
       setData(res.data);
@@ -31,7 +31,7 @@ const ClosurePage: FC = () => {
 
   const fetchClosures = async () => {
     try {
-      const res = await axios.get("http://localhost:5500/closures", {
+      const res = await axios.get("/closures", {
         headers: { Authorization: "barear " + cookies.auth?.token },
       });
       setClosures(res.data);
@@ -51,7 +51,7 @@ const ClosurePage: FC = () => {
     if (!data) return;
     try {
       await axios.post(
-        "http://localhost:5500/closures/submit",
+        "/closures/submit",
         {
           openingBalance,
           expectedCash: data.expectedCash + openingBalance,

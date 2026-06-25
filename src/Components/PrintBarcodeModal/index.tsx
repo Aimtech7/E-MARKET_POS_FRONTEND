@@ -43,7 +43,7 @@ const PrintBarcodeModal: FC<PrintBarcodeModalProps> = ({ product, isOpen, onClos
           <div ref={componentRef} style={{ textAlign: "center", color: "black", backgroundColor: "white", padding: "10px" }}>
             <p style={{ margin: "0 0 5px 0", fontSize: "14px", fontWeight: "bold" }}>{product.productName}</p>
             <img 
-              src={`http://localhost:5500/product/${product._id}/barcode`} 
+              src={`/product/${product._id}/barcode`} 
               alt="Barcode" 
               style={{ width: "100%", maxHeight: "80px", objectFit: "contain" }} 
             />

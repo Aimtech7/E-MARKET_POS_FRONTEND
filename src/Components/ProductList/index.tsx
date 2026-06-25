@@ -50,7 +50,7 @@ const ProductList: FC = () => {
   const handleReprintLast = async () => {
     const token = cookies.auth?.token;
     try {
-      const res = await axios.get("http://localhost:5500/invoice", {
+      const res = await axios.get("/invoice", {
         headers: { Authorization: "barear " + token },
       });
       if (res.data && res.data.length > 0) {

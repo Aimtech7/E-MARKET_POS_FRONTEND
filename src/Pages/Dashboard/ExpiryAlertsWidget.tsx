@@ -10,7 +10,7 @@ const ExpiryAlertsWidget: FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5500/analytics/expiry", {
+      .get("/analytics/expiry", {
         headers: { Authorization: "barear " + cookies.auth.token },
       })
       .then((res) => setAlerts(res.data))

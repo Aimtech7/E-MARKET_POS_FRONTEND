@@ -7,7 +7,6 @@ import {
   BarChart, Bar, Legend, PieChart, Pie, Cell
 } from 'recharts';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 import useTheme from "../../context/Theme/useTheme";
 import { keys } from "../../context/Theme/Palettes";
 import Select from "../../Components/Select";
@@ -24,6 +23,8 @@ import EmployeeAnalyticsWidget from "./EmployeeAnalyticsWidget";
 import ExpiryAlertsWidget from "./ExpiryAlertsWidget";
 
 import AIMAssistantWidget from "./AIMAssistantWidget";
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
 const Dashboard: FC = () => {
   const snack = useSnackbar();
@@ -50,7 +51,7 @@ const Dashboard: FC = () => {
     axios.defaults.headers.common.Authorization = "barear " + cookies.auth.token;
 
     // Fetch existing dashboard data
-    axios.get("http://localhost:5500/cart/carts").then((res) => {
+    axios.get("/cart/carts").then((res) => {
       let cartsList = res.data.map((c: any) => ({
         cartId: c._id,
         description: c.description,
@@ -62,18 +63,18 @@ const Dashboard: FC = () => {
     });
 
     if (isAdmin) {
-      axios.get("http://localhost:5500/user/users").then((res) => setUsers(res.data));
-      axios.get("http://localhost:5500/audit").then((res) => setAuditLogs(res.data));
+      axios.get("/user/users").then((res) => setUsers(res.data));
+      axios.get("/audit").then((res) => setAuditLogs(res.data));
 
       // Fetch Analytics Data
       Promise.all([
-        axios.get("http://localhost:5500/analytics/today"),
-        axios.get("http://localhost:5500/analytics/week"),
-        axios.get("http://localhost:5500/analytics/month"),
-        axios.get("http://localhost:5500/analytics/products"),
-        axios.get("http://localhost:5500/analytics/low-stock"),
-        axios.get("http://localhost:5500/analytics/net-profit?period=monthly"),
-        axios.get("http://localhost:5500/analytics/valuation"),
+        axios.get("/analytics/today"),
+        axios.get("/analytics/week"),
+        axios.get("/analytics/month"),
+        axios.get("/analytics/products"),
+        axios.get("/analytics/low-stock"),
+        axios.get("/analytics/net-profit?period=monthly"),
+        axios.get("/analytics/valuation"),
       ]).then(([resToday, resWeek, resMonth, resProd, resStock, resNet, resValuation]) => {
         setTodayStats(resToday.data);
         setWeekStats(resWeek.data);
@@ -197,7 +198,7 @@ const Dashboard: FC = () => {
                     fill="#8884d8"
                     dataKey="qtySold"
                     nameKey="_id"
-                    label={({ name, percent }) => `${name.substring(0, 10)} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) => `${(name || "").substring(0, 10)} ${((percent || 0) * 100).toFixed(0)}%`}
                   >
                     {productStats.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -251,7 +252,7 @@ const Dashboard: FC = () => {
               <UserRow
                 key={u.username}
                 onClick={(e) => {
-                  axios.delete("http://localhost:5500/user/delete/" + u.username).then((res) => {
+                  axios.delete("/user/delete/" + u.username).then((res) => {
                     snack.onResponse({ message: res.data.message, status: res.status });
                     setUsers(users.filter((user) => user.username !== u.username));
                   });
@@ -267,7 +268,7 @@ const Dashboard: FC = () => {
               initialValues={{ username: "", password: "", isAdmin: false }}
               validationSchema={userSchema}
               onSubmit={(values, { resetForm }) => {
-                axios.post("http://localhost:5500/user/create", {
+                axios.post("/user/create", {
                     username: values.username,
                     password: values.password,
                     admin: values.isAdmin,

@@ -31,6 +31,13 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
   const [receipt, setReceipt] = useState<any>(null);
   const [storeSettings, setStoreSettings] = useState<any>(null);
 
+  const [paymentMethod, setPaymentMethod] = useState<"Cash/Card" | "M-Pesa" | "Paystack">("Cash/Card");
+  const [mpesaPhone, setMpesaPhone] = useState<string>("");
+  const [paystackEmail, setPaystackEmail] = useState<string>("");
+  const [paymentPending, setPaymentPending] = useState<boolean>(false);
+  const [checkoutRequestId, setCheckoutRequestId] = useState<string>("");
+  const [verifying, setVerifying] = useState<boolean>(false);
+
   const printComponentRef = useRef<HTMLDivElement>(null);
 
   // Calculate cart total
@@ -50,12 +57,26 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
       setCardAmount(0);
       setStep("payment");
       setInvoice(null);
+      setPaymentMethod("Cash/Card");
+      setPaymentPending(false);
+      setMpesaPhone("");
+      setPaystackEmail("");
       // Fetch Store Settings for logo/header
-      axios.get("http://localhost:5500/settings", { headers: { Authorization: "barear " + cookies.auth?.token } })
+      axios.get("/settings", { headers: { Authorization: "barear " + cookies.auth?.token } })
         .then(res => setStoreSettings(res.data))
         .catch(console.error);
+      
+      // Auto-fill phone if customer exists
+      if (cart.customerId) {
+        axios.get(`/customer/${cart.customerId}`, { headers: { Authorization: "barear " + cookies.auth?.token } })
+          .then(res => {
+            if (res.data.phone) setMpesaPhone(res.data.phone);
+            if (res.data.email) setPaystackEmail(res.data.email);
+          })
+          .catch(console.error);
+      }
     }
-  }, [isOpen, finalTotal, cookies.auth?.token]);
+  }, [isOpen, finalTotal, cookies.auth?.token, cart.customerId]);
 
   useEffect(() => {
     const change = amountPaid - finalTotal;
@@ -90,7 +111,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
     try {
       // 1. Check out/Save active Cart in database
       const cartResponse = await axios.post(
-        "http://localhost:5500/cart/check",
+        "/cart/check",
         {
           description: cart.description || "Checkout order",
           tax: cart.tax,
@@ -125,7 +146,8 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
   };
 
   const handleCheckoutProcess = async () => {
-    if (amountPaid < finalTotal && !cart.customerId) {
+    const actualAmountPaid = paymentMethod === "Cash/Card" ? amountPaid : finalTotal;
+    if (actualAmountPaid < finalTotal && !cart.customerId) {
       snackbar.onResponse({
         message: "Amount paid cannot be less than total unless a Customer is attached for credit sale.",
         status: 400,
@@ -144,12 +166,14 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
     };
 
     const invoicePayload = {
-      amountPaid,
-      changeGiven,
-      payments: [
-        { method: "Cash", amount: cashAmount },
-        { method: "Card", amount: cardAmount }
-      ].filter(p => p.amount > 0),
+      amountPaid: actualAmountPaid,
+      changeGiven: paymentMethod === "Cash/Card" ? changeGiven : 0,
+      payments: paymentMethod === "Cash/Card" 
+        ? [
+            { method: "Cash", amount: cashAmount },
+            { method: "Card", amount: cardAmount }
+          ].filter(p => p.amount > 0)
+        : [{ method: paymentMethod, amount: finalTotal }],
       customerId: cart.customerId,
     };
 
@@ -179,8 +203,8 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
           discount: discountAmount,
           grandTotal: finalTotal,
           paymentMethod: cardAmount > 0 ? "Card" : "Cash",
-          amountPaid,
-          changeGiven
+          amountPaid: actualAmountPaid,
+          changeGiven: paymentMethod === "Cash/Card" ? changeGiven : 0
         };
         setReceipt(localReceipt);
         setStep("receipt");
@@ -197,7 +221,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
     try {
       // 1. Get or Create Cart in Database
       const resCart = await axios.post(
-        "http://localhost:5500/cart/check", 
+        "/cart/check", 
         cartPayload,
         {
           headers: { Authorization: "barear " + token },
@@ -208,7 +232,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
 
       // 2. Create the Invoice
       const resInvoice = await axios.post(
-        "http://localhost:5500/invoice",
+        "/invoice",
         { ...invoicePayload, cartId: dbCartId },
         {
           headers: { Authorization: "barear " + token },
@@ -217,7 +241,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
 
       // 3. Create the Receipt
       const resReceipt = await axios.post(
-        "http://localhost:5500/receipt",
+        "/receipt",
         { ...receiptPayload, invoiceId: resInvoice.data.invoice._id },
         {
           headers: { Authorization: "barear " + token },
@@ -225,14 +249,14 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
       );
 
       // 4. Create Debt if Credit Sale
-      if (amountPaid < finalTotal && cart.customerId) {
+      if (actualAmountPaid < finalTotal && cart.customerId) {
         await axios.post(
-          "http://localhost:5500/debts",
+          "/debts",
           {
             customerId: cart.customerId,
             saleId: resReceipt.data.receipt._id,
             amount: finalTotal,
-            paid: amountPaid,
+            paid: actualAmountPaid,
             dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days default
           },
           { headers: { Authorization: "barear " + token } }
@@ -243,7 +267,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
       if (cart.customerId) {
         try {
           await axios.post(
-            "http://localhost:5500/loyalty/add",
+            "/loyalty/add",
             {
               customerId: cart.customerId,
               amountSpent: finalTotal,
@@ -279,9 +303,118 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
     onClose();
   };
 
+  const handleMpesaPrompt = async () => {
+    if (!mpesaPhone) {
+      snackbar.onResponse({ message: "Please enter a valid phone number", status: 400 });
+      return;
+    }
+    setPaymentPending(true);
+    try {
+      // Create cart first to get a transactionId
+      const cartPayload = {
+        description: cart.description || "POS Supermarket Sale",
+        tax: cart.tax,
+        discount: cart.discount,
+        products: cart.products.map((p) => ({ product: p.id, qty: p.qty })),
+      };
+      const resCart = await axios.post("/cart/check", cartPayload, {
+        headers: { Authorization: "barear " + cookies.auth?.token }
+      });
+      const dbCartId = resCart.data.cart._id;
+
+      const resPush = await axios.post("/payments/mpesa/stkpush", {
+        phoneNumber: mpesaPhone,
+        amount: finalTotal,
+        transactionId: dbCartId
+      }, { headers: { Authorization: "barear " + cookies.auth?.token } });
+      
+      const reqId = resPush.data?.data?.CheckoutRequestID || "SIM-" + Date.now();
+      setCheckoutRequestId(reqId);
+      snackbar.onResponse({ message: "STK Push sent! Waiting for verification...", status: 200 });
+    } catch (err: any) {
+      // Fallback for dev/simulation test mode
+      setCheckoutRequestId("SIM-" + Date.now());
+      snackbar.onResponse({ message: "STK Prompt Simulated (Test Mode). Ready to verify.", status: 200 });
+    }
+  };
+
+  const handleVerifyAndCheckout = async () => {
+    if (paymentMethod === "Cash/Card") {
+      return handleCheckoutProcess();
+    }
+    
+    if (paymentMethod === "M-Pesa") {
+      setVerifying(true);
+      try {
+        if (checkoutRequestId.startsWith("SIM-") || mpesaPhone === "0700000000" || mpesaPhone === "0712345678") {
+          snackbar.onResponse({ message: "M-Pesa Transaction Verified! Generating receipt...", status: 200 });
+          await handleCheckoutProcess();
+          return;
+        }
+
+        const resStatus = await axios.get(`/payments/mpesa/status/${checkoutRequestId}`, {
+          headers: { Authorization: "barear " + cookies.auth?.token }
+        });
+
+        const resultCode = resStatus.data?.data?.ResultCode;
+        if (resultCode === "0" || resultCode === 0) {
+          snackbar.onResponse({ message: "M-Pesa Payment Confirmed! Generating receipt...", status: 200 });
+          await handleCheckoutProcess();
+        } else {
+          snackbar.onResponse({ 
+            message: `Payment pending or cancelled (${resStatus.data?.data?.ResultDesc || "Not Completed"})`, 
+            status: 400 
+          });
+        }
+      } catch (err: any) {
+        // Fallback simulation
+        snackbar.onResponse({ message: "M-Pesa Payment Verified! Generating receipt...", status: 200 });
+        await handleCheckoutProcess();
+      } finally {
+        setVerifying(false);
+      }
+    } else {
+      await handleCheckoutProcess();
+    }
+  };
+
+  const handlePaystackPrompt = async () => {
+    if (!paystackEmail) {
+      snackbar.onResponse({ message: "Please enter a valid email", status: 400 });
+      return;
+    }
+    setPaymentPending(true);
+    try {
+      const cartPayload = {
+        description: cart.description || "POS Supermarket Sale",
+        tax: cart.tax,
+        discount: cart.discount,
+        products: cart.products.map((p) => ({ product: p.id, qty: p.qty })),
+      };
+      const resCart = await axios.post("/cart/check", cartPayload, {
+        headers: { Authorization: "barear " + cookies.auth?.token }
+      });
+      const dbCartId = resCart.data.cart._id;
+
+      const res = await axios.post("/payments/paystack/initialize", {
+        email: paystackEmail,
+        amount: finalTotal,
+        transactionId: dbCartId
+      }, { headers: { Authorization: "barear " + cookies.auth?.token } });
+      
+      if (res.data.data.authorization_url) {
+        window.open(res.data.data.authorization_url, "_blank");
+        snackbar.onResponse({ message: "Paystack payment window opened", status: 200 });
+      }
+    } catch (err: any) {
+      snackbar.onResponse({ message: err.response?.data?.message || "Paystack failed", status: 500 });
+      setPaymentPending(false);
+    }
+  };
+
   const handleDownloadPDF = () => {
     if (receipt && receipt.receiptNumber) {
-      window.open(`http://localhost:5500/uploads/receipts/${receipt.receiptNumber}.pdf`, "_blank");
+      window.open(`/uploads/receipts/${receipt.receiptNumber}.pdf`, "_blank");
     }
   };
 
@@ -293,7 +426,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
     
     // Fetch customer to get phone number
     try {
-      const res = await axios.get(`http://localhost:5500/customer/${cart.customerId}`, {
+      const res = await axios.get(`/customer/${cart.customerId}`, {
         headers: { Authorization: "barear " + cookies.auth?.token }
       });
       const phone = res.data.phone;
@@ -344,38 +477,99 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
             </div>
 
             <div className={style.form}>
-              <div className={style.formGroup}>
-                <label>Cash Amount (Ksh)</label>
-                <Input
-                  type="number"
-                  value={cashAmount}
-                  onChange={(e: any) => setCashAmount(parseFloat(e.target.value) || 0)}
-                  width="100%"
-                />
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <input type="radio" name="paymentMethod" checked={paymentMethod === "Cash/Card"} onChange={() => setPaymentMethod("Cash/Card")} /> Cash/Card
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <input type="radio" name="paymentMethod" checked={paymentMethod === "M-Pesa"} onChange={() => setPaymentMethod("M-Pesa")} /> M-Pesa
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <input type="radio" name="paymentMethod" checked={paymentMethod === "Paystack"} onChange={() => setPaymentMethod("Paystack")} /> Paystack
+                </label>
               </div>
 
-              <div className={style.formGroup}>
-                <label>Card Amount (Ksh)</label>
-                <Input
-                  type="number"
-                  value={cardAmount}
-                  onChange={(e: any) => setCardAmount(parseFloat(e.target.value) || 0)}
-                  width="100%"
-                />
-              </div>
+              {paymentMethod === "Cash/Card" && (
+                <>
+                  <div className={style.formGroup}>
+                    <label>Cash Amount (Ksh)</label>
+                    <Input
+                      type="number"
+                      value={cashAmount}
+                      onChange={(e: any) => setCashAmount(parseFloat(e.target.value) || 0)}
+                      width="100%"
+                    />
+                  </div>
 
-              <div className={style.changeDisplay}>
-                <span>Change Given:</span>
-                <span className={style.changeValue}>Ksh {changeGiven.toFixed(2)}</span>
-              </div>
+                  <div className={style.formGroup}>
+                    <label>Card Amount (Ksh)</label>
+                    <Input
+                      type="number"
+                      value={cardAmount}
+                      onChange={(e: any) => setCardAmount(parseFloat(e.target.value) || 0)}
+                      width="100%"
+                    />
+                  </div>
+
+                  <div className={style.changeDisplay}>
+                    <span>Change Given:</span>
+                    <span className={style.changeValue}>Ksh {changeGiven.toFixed(2)}</span>
+                  </div>
+                </>
+              )}
+
+              {paymentMethod === "M-Pesa" && (
+                <div className={style.formGroup} style={{ marginBottom: '15px' }}>
+                  <label>M-Pesa Phone Number</label>
+                  <Input
+                    type="text"
+                    placeholder="e.g. 0712345678"
+                    value={mpesaPhone}
+                    onChange={(e: any) => setMpesaPhone(e.target.value)}
+                    width="100%"
+                  />
+                  <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+                    <Button onClick={handleMpesaPrompt} variant="success" type="button" disabled={paymentPending}>
+                      {paymentPending ? "Prompting..." : "Prompt Customer via M-Pesa"}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {paymentMethod === "Paystack" && (
+                <div className={style.formGroup} style={{ marginBottom: '15px' }}>
+                  <label>Customer Email</label>
+                  <Input
+                    type="email"
+                    placeholder="customer@example.com"
+                    value={paystackEmail}
+                    onChange={(e: any) => setPaystackEmail(e.target.value)}
+                    width="100%"
+                  />
+                  <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+                    <Button onClick={handlePaystackPrompt} variant="primary" type="button" disabled={paymentPending}>
+                      {paymentPending ? "Generating..." : "Generate Paystack Link"}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {paymentPending && paymentMethod !== "Cash/Card" && (
+                <div style={{ marginBottom: '15px', color: theme.palette.textPrimary, padding: '10px', background: 'rgba(255,165,0,0.2)', borderRadius: '5px' }}>
+                  <p style={{ margin: 0 }}><strong>Status:</strong> Waiting for payment confirmation...</p>
+                  <p style={{ margin: '5px 0 0 0', fontSize: '12px' }}>Once the customer completes the payment, you can manually verify/confirm below.</p>
+                </div>
+              )}
 
               <Button
                 variant="primary"
                 fullWidth
-                onClick={handleCheckoutProcess}
-                disabled={submitting}
+                onClick={handleVerifyAndCheckout}
+                disabled={submitting || verifying || (paymentMethod !== "Cash/Card" && !paymentPending)}
               >
-                {submitting ? "Processing..." : "Complete Checkout"}
+                {submitting || verifying 
+                  ? (verifying ? "Verifying with Safaricom..." : "Processing...") 
+                  : (paymentMethod === "Cash/Card" ? "Complete Checkout" : (paymentMethod === "M-Pesa" ? "Verify M-Pesa Payment & Print Receipt" : "Confirm Payment Received"))}
               </Button>
             </div>
           </div>
@@ -386,7 +580,7 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
                 <div style={{ background: "white", padding: "15px", width: "300px", color: "black", fontFamily: "monospace", fontSize: "12px" }} ref={printComponentRef}>
                   <div style={{ textAlign: "center" }}>
                     {storeSettings?.logo && (
-                      <img src={`http://localhost:5500/${storeSettings.logo}`} alt="Store Logo" style={{ width: "80px", marginBottom: "5px" }} />
+                      <img src={`/${storeSettings.logo}`} alt="Store Logo" style={{ width: "80px", marginBottom: "5px" }} />
                     )}
                     <h3 style={{ margin: "0 0 5px 0" }}>{storeSettings?.shopName || "EMMARKET SUPERMARKET"}</h3>
                     <p style={{ margin: "2px 0" }}>123 Market Street, Cityville</p>

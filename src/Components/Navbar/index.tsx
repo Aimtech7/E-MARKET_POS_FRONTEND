@@ -40,14 +40,14 @@ const Navbar: FC = () => {
     if (cookies.auth?.token) {
       import("axios").then(axios => {
         // Fetch low stock count
-        axios.default.get("http://localhost:5500/analytics/low-stock", {
+        axios.default.get("/analytics/low-stock", {
           headers: { Authorization: "barear " + cookies.auth.token }
         }).then(res => {
           setLowStockCount(res.data.lowStockCount || 0);
         }).catch(err => console.error(err));
 
         // Fetch unread notifications count
-        axios.default.get("http://localhost:5500/notifications", {
+        axios.default.get("/notifications", {
           headers: { Authorization: "barear " + cookies.auth.token }
         }).then(res => {
           const unread = res.data.filter((n: any) => !n.isRead).length;

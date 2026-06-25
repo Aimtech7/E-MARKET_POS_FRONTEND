@@ -14,7 +14,7 @@ const BackupPage: FC = () => {
   const [loading, setLoading] = useState(false);
 
   const fetchBackups = () => {
-    axios.get("http://localhost:5500/backups", {
+    axios.get("/backups", {
       headers: { Authorization: "barear " + cookies.auth.token }
     }).then(res => setBackups(res.data))
       .catch(err => console.error(err));
@@ -26,7 +26,7 @@ const BackupPage: FC = () => {
 
   const triggerBackup = () => {
     setLoading(true);
-    axios.post("http://localhost:5500/backups/trigger", {}, {
+    axios.post("/backups/trigger", {}, {
       headers: { Authorization: "barear " + cookies.auth.token }
     }).then(res => {
       snack.onResponse({ message: res.data.message, status: res.status });
@@ -39,7 +39,7 @@ const BackupPage: FC = () => {
   const triggerRestore = (filename: string) => {
     if (!window.confirm("Are you sure you want to restore this backup? This will overwrite current data!")) return;
     setLoading(true);
-    axios.post("http://localhost:5500/backups/restore", { filename }, {
+    axios.post("/backups/restore", { filename }, {
       headers: { Authorization: "barear " + cookies.auth.token }
     }).then(res => {
       snack.onResponse({ message: res.data.message, status: res.status });

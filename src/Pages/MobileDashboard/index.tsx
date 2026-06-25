@@ -20,9 +20,9 @@ const MobileDashboard: FC = () => {
       axios.defaults.headers.common.Authorization = "barear " + cookies.auth.token;
 
       Promise.all([
-        axios.get("http://localhost:5500/analytics/today"),
-        axios.get("http://localhost:5500/analytics/low-stock"),
-        axios.get("http://localhost:5500/analytics/ai/insights")
+        axios.get("/analytics/today"),
+        axios.get("/analytics/low-stock"),
+        axios.get("/analytics/ai/insights")
       ]).then(([resToday, resStock, resAi]) => {
         setTodayStats(resToday.data);
         setStockStats(resStock.data);

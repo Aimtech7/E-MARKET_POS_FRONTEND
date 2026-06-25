@@ -38,7 +38,7 @@ const CategoryPage: FC = () => {
   const theme = useTheme();
   useEffect(() => {
     axios
-      .get("http://localhost:5500/category/categories")
+      .get("/category/categories")
       .then((res) => dispatch(set_categories(res.data)))
       .catch((err) => {
         alert(err.response.message);
@@ -80,7 +80,7 @@ const CategoryPage: FC = () => {
           <Formik
             onSubmit={(values) => {
               axios
-                .post("http://localhost:5500/category/new/", {
+                .post("/category/new/", {
                   categoryName: values.category,
                 })
                 .then((res) => {
@@ -118,7 +118,7 @@ const CategoryPage: FC = () => {
             onSubmit={(values, actions) => {
               axios
                 .post(
-                  "http://localhost:5500/category/update/" +
+                  "/category/update/" +
                     values.selectedCategory,
                   { categoryName: values.category }
                 )
@@ -169,7 +169,7 @@ const CategoryPage: FC = () => {
             onSubmit={(values) => {
               axios
                 .delete(
-                  "http://localhost:5500/category/delete/" +
+                  "/category/delete/" +
                     values.selectedCategory
                 )
                 .then((res) => {

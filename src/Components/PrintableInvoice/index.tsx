@@ -21,7 +21,7 @@ export const PrintableInvoice = forwardRef<HTMLDivElement, PrintableInvoiceProps
       <div ref={ref} className={style.ticket}>
         <div className={style.header}>
           {storeSettings?.logo && (
-            <img src={`http://localhost:5500/${storeSettings.logo}`} alt="Logo" style={{ width: "80px", height: "auto", marginBottom: "10px" }} />
+            <img src={`/${storeSettings.logo}`} alt="Logo" style={{ width: "80px", height: "auto", marginBottom: "10px" }} />
           )}
           <h1 className={style.title}>{storeSettings?.shopName || "EMMARKET"}</h1>
           <p className={style.subtitle}>Supermarket POS Receipt</p>

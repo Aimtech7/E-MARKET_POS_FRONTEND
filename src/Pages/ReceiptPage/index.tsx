@@ -14,7 +14,7 @@ const ReceiptPage: FC = () => {
   useEffect(() => {
     const fetchReceipts = async () => {
       try {
-        const res = await axios.get("http://localhost:5500/receipt", {
+        const res = await axios.get("/receipt", {
           headers: { Authorization: "barear " + cookies.auth?.token },
         });
         setReceipts(res.data);
@@ -68,7 +68,7 @@ const ReceiptPage: FC = () => {
                         onClick={async () => {
                           if (window.confirm("Are you sure you want to refund this entire transaction and return items to inventory?")) {
                             try {
-                              await axios.post("http://localhost:5500/refunds/process", {
+                              await axios.post("/refunds/process", {
                                 originalInvoiceId: r.invoiceReference
                               }, {
                                 headers: { Authorization: "barear " + cookies.auth?.token }

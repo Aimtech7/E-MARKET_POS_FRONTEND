@@ -41,7 +41,7 @@ const SupplierPage: FC = () => {
 
   const fetchSuppliers = () => {
     setLoading(true);
-    axios.get("http://localhost:5500/supplier/suppliers", {
+    axios.get("/supplier/suppliers", {
       headers: { Authorization: "Bearer " + cookies.auth?.token }
     })
       .then(res => {
@@ -63,7 +63,7 @@ const SupplierPage: FC = () => {
     const config = { headers: { Authorization: "Bearer " + cookies.auth?.token } };
 
     if (submitAction === "add") {
-      axios.post("http://localhost:5500/supplier/new", values, config)
+      axios.post("/supplier/new", values, config)
         .then(res => {
           snack.onResponse({ message: res.data.message, status: res.status });
           fetchSuppliers();
@@ -71,14 +71,14 @@ const SupplierPage: FC = () => {
         })
         .catch(err => snack.onResponse({ message: err.response?.data?.message || "Error", status: err.response?.status || 500 }));
     } else if (submitAction === "update") {
-      axios.put("http://localhost:5500/supplier/update/" + values.id, values, config)
+      axios.put("/supplier/update/" + values.id, values, config)
         .then(res => {
           snack.onResponse({ message: res.data.message, status: res.status });
           fetchSuppliers();
         })
         .catch(err => snack.onResponse({ message: err.response?.data?.message || "Error", status: err.response?.status || 500 }));
     } else if (submitAction === "delete") {
-      axios.delete("http://localhost:5500/supplier/delete/" + values.id, config)
+      axios.delete("/supplier/delete/" + values.id, config)
         .then(res => {
           snack.onResponse({ message: res.data.message, status: res.status });
           setSelectedSupplierId("");

@@ -39,7 +39,7 @@ registerRoute(
 
 // Cache API requests (e.g., fetching products and categories)
 registerRoute(
-  ({ url }) => url.origin === 'http://localhost:5500' && (url.pathname.includes('/product/') || url.pathname.includes('/category/')),
+  ({ url }) => url.origin === '' && (url.pathname.includes('/product/') || url.pathname.includes('/category/')),
   new NetworkFirst({
     cacheName: 'api-cache',
     plugins: [

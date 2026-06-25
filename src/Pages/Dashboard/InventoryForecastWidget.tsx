@@ -10,7 +10,7 @@ const InventoryForecastWidget: FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5500/analytics/forecast", {
+      .get("/analytics/forecast", {
         headers: { Authorization: "barear " + cookies.auth.token },
       })
       .then((res) => setForecasts(res.data.slice(0, 10))) // Top 10 items

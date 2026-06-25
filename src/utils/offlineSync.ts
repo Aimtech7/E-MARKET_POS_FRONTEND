@@ -36,7 +36,7 @@ export const syncOfflineCheckouts = async (token: string) => {
     try {
       // 1. Re-run Cart Save
       const resCart = await axios.post(
-        "http://localhost:5500/cart/check", 
+        "/cart/check", 
         checkout.cartData,
         { headers: { Authorization: "barear " + token } }
       );
@@ -45,7 +45,7 @@ export const syncOfflineCheckouts = async (token: string) => {
       // 2. Re-run Invoice Creation
       const invoicePayload = { ...checkout.invoiceData, cartId: dbCartId };
       const resInvoice = await axios.post(
-        "http://localhost:5500/invoice",
+        "/invoice",
         invoicePayload,
         { headers: { Authorization: "barear " + token } }
       );
@@ -53,7 +53,7 @@ export const syncOfflineCheckouts = async (token: string) => {
       // 3. Re-run Receipt Creation
       const receiptPayload = { ...checkout.receiptData, invoiceId: resInvoice.data.invoice._id };
       await axios.post(
-        "http://localhost:5500/receipt",
+        "/receipt",
         receiptPayload,
         { headers: { Authorization: "barear " + token } }
       );

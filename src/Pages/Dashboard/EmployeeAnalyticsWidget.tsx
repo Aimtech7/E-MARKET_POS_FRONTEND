@@ -11,7 +11,7 @@ const EmployeeAnalyticsWidget: FC = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5500/analytics/employees?period=${period}`, {
+      .get(`/analytics/employees?period=${period}`, {
         headers: { Authorization: "barear " + cookies.auth.token },
       })
       .then((res) => setEmployees(res.data))

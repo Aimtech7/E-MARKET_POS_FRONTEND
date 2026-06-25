@@ -44,7 +44,7 @@ const ProductPage: FC = () => {
 
   const fetchProducts = () => {
     axios
-      .get(`http://localhost:5500/product/products?includeArchived=${showArchived}`, {
+      .get(`/product/products?includeArchived=${showArchived}`, {
         headers: { Authorization: "Bearer " + cookies.auth?.token }
       })
       .then((res) => dispatch(set_products(res.data)))
@@ -55,7 +55,7 @@ const ProductPage: FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5500/category/categories", {
+      .get("/category/categories", {
         headers: { Authorization: "Bearer " + cookies.auth?.token }
       })
       .then((res) => dispatch(set_categories(res.data)))
@@ -64,7 +64,7 @@ const ProductPage: FC = () => {
       });
     fetchProducts();
     axios
-      .get("http://localhost:5500/unit/units", {
+      .get("/unit/units", {
         headers: { Authorization: "Bearer " + cookies.auth?.token }
       })
       .then((res) => dispatch(set_units(res.data)))
@@ -136,7 +136,7 @@ const ProductPage: FC = () => {
 
     if (submitAction === "add") {
       axios
-        .post("http://localhost:5500/product/new", formData, {
+        .post("/product/new", formData, {
           headers: { Authorization: "Bearer " + cookies.auth?.token }
         })
         .then((res) => {
@@ -169,7 +169,7 @@ const ProductPage: FC = () => {
         });
     } else if (submitAction === "update") {
       axios
-        .post("http://localhost:5500/product/update/" + values.id, formData, {
+        .post("/product/update/" + values.id, formData, {
           headers: { Authorization: "Bearer " + cookies.auth?.token }
         })
         .then((res) => {
@@ -202,7 +202,7 @@ const ProductPage: FC = () => {
         });
     } else if (submitAction === "delete") {
       axios
-        .delete("http://localhost:5500/product/delete/" + values.id, {
+        .delete("/product/delete/" + values.id, {
           headers: { Authorization: "Bearer " + cookies.auth?.token }
         })
         .then((res) => {
@@ -219,14 +219,14 @@ const ProductPage: FC = () => {
           });
         });
     } else if (submitAction === "archive") {
-      axios.put("http://localhost:5500/product/archive/" + values.id, null, { headers: { Authorization: "Bearer " + cookies.auth?.token }})
+      axios.put("/product/archive/" + values.id, null, { headers: { Authorization: "Bearer " + cookies.auth?.token }})
         .then((res) => {
           snack.onResponse({ message: res.data.message, status: res.status });
           fetchProducts();
         })
         .catch((err) => snack.onResponse({ message: err.response?.data?.message, status: err.response?.status }));
     } else if (submitAction === "restore") {
-      axios.put("http://localhost:5500/product/restore/" + values.id, null, { headers: { Authorization: "Bearer " + cookies.auth?.token }})
+      axios.put("/product/restore/" + values.id, null, { headers: { Authorization: "Bearer " + cookies.auth?.token }})
         .then((res) => {
           snack.onResponse({ message: res.data.message, status: res.status });
           fetchProducts();
@@ -339,7 +339,7 @@ const ProductPage: FC = () => {
               <h1>{selectedItem?.id ? "#" + selectedItem.id : "PRODUCT"}</h1>
               {selectedItem?.id && (
                 <div style={{ textAlign: "center", marginBottom: "10px" }}>
-                  <img src={`http://localhost:5500/product/${selectedItem.id}/barcode`} alt="Product Barcode" style={{ maxWidth: "100%", height: "auto" }} />
+                  <img src={`/product/${selectedItem.id}/barcode`} alt="Product Barcode" style={{ maxWidth: "100%", height: "auto" }} />
                 </div>
               )}
               <ImagePicker name="image" />

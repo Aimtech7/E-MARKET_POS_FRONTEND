@@ -28,7 +28,7 @@ const CustomerPage: FC = () => {
 
   const fetchCustomers = () => {
     axios
-      .get("http://localhost:5500/customer", {
+      .get("/customer", {
         headers: { Authorization: "Bearer " + cookies.auth.token },
       })
       .then((res) => setCustomers(res.data))
@@ -37,19 +37,19 @@ const CustomerPage: FC = () => {
 
   const loadHistoryAndDebts = (customerId: string) => {
     axios
-      .get(`http://localhost:5500/customer/${customerId}/history`, {
+      .get(`/customer/${customerId}/history`, {
         headers: { Authorization: "Bearer " + cookies.auth.token },
       })
       .then((res) => setHistory(res.data));
 
     axios
-      .get(`http://localhost:5500/debts/customer/${customerId}`, {
+      .get(`/debts/customer/${customerId}`, {
         headers: { Authorization: "Bearer " + cookies.auth.token },
       })
       .then((res) => setDebts(res.data));
 
     axios
-      .get(`http://localhost:5500/loyalty/customer/${customerId}`, {
+      .get(`/loyalty/customer/${customerId}`, {
         headers: { Authorization: "Bearer " + cookies.auth.token },
       })
       .then((res) => setLoyalty(res.data))
@@ -122,7 +122,7 @@ const CustomerPage: FC = () => {
             onSubmit={(values, { resetForm }) => {
               if (selectedCustomer) {
                 axios
-                  .put(`http://localhost:5500/customer/${selectedCustomer._id}`, values, {
+                  .put(`/customer/${selectedCustomer._id}`, values, {
                     headers: { Authorization: "Bearer " + cookies.auth.token },
                   })
                   .then((res) => {
@@ -134,7 +134,7 @@ const CustomerPage: FC = () => {
                   .catch((err) => snack.onResponse({ message: err.response?.data?.message || "Error", status: 500 }));
               } else {
                 axios
-                  .post("http://localhost:5500/customer/new", values, {
+                  .post("/customer/new", values, {
                     headers: { Authorization: "Bearer " + cookies.auth.token },
                   })
                   .then((res) => {

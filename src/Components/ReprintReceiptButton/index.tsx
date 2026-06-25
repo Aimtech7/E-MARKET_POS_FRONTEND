@@ -16,7 +16,7 @@ const ReprintReceiptButton: FC<ReprintReceiptButtonProps> = ({ receiptId }) => {
   const handleFetchAndPreview = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5500/receipt/${receiptId}`, {
+      const res = await axios.get(`/receipt/${receiptId}`, {
         headers: { Authorization: "barear " + cookies.auth?.token },
       });
       setReceiptData(res.data);
