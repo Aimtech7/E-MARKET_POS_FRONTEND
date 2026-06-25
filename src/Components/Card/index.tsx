@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/Reducers";
 import { addProductToCart, createCart, chooseCart } from "../../store/Actions";
 import useSnackbar from "../../context/Snackbar/useSnackbar";
+import { playBeep } from "../../utils/posSounds";
 interface props {
   title: string;
   unitOfMeasure: string;
@@ -36,6 +37,7 @@ const Card: FC<props> = ({
   const addHandler = () => {
     let isFound = products.find((p) => p.id === id);
     if (isFound) {
+      playBeep();
       let targetCartId = cartId;
       if (!targetCartId) {
         targetCartId = Date.now().toString();

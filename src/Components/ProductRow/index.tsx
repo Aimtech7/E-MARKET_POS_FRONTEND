@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { addProductToCart, createCart, chooseCart } from "../../store/Actions";
 import { RootState } from "../../store/Reducers";
 import useSnackbar from "../../context/Snackbar/useSnackbar";
+import { playBeep } from "../../utils/posSounds";
 interface props {
   title: string;
   unitOfMeasure: string;
@@ -43,6 +44,7 @@ const ProductRow: FC<props> = ({
     // some logic to handle the adding to order
     let isFound = products.find((p) => p.id === id);
     if (isFound) {
+      playBeep();
       let targetCartId = cartId;
       if (!targetCartId) {
         targetCartId = Date.now().toString();

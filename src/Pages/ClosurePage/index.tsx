@@ -116,9 +116,26 @@ const ClosurePage: FC = () => {
             <Input type="text" value={notes} onChange={(e: any) => setNotes(e.target.value)} width="100%" />
           </div>
 
-          <Button variant="primary" onClick={handleSubmit} fullWidth>
-            Submit Daily Closure
-          </Button>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <Button variant="primary" onClick={handleSubmit} fullWidth>
+              Submit Daily Closure
+            </Button>
+            <Button variant="success" onClick={() => {
+              const expTotal = data.expectedCash + openingBalance;
+              const diff = actualCash - expTotal;
+              const summary = `📊 *EMMARKET Z-REPORT (${new Date().toLocaleDateString()})* %0A%0A` +
+                `💰 Total Sales: Ksh ${data.totalSales?.toFixed(2)}%0A` +
+                `📥 Opening Balance: Ksh ${openingBalance?.toFixed(2)}%0A` +
+                `💵 Expected Cash: Ksh ${expTotal?.toFixed(2)}%0A` +
+                `✋ Actual Cash Counted: Ksh ${actualCash?.toFixed(2)}%0A` +
+                `⚖️ Variance: Ksh ${diff?.toFixed(2)}%0A` +
+                `📝 Notes: ${notes || "None"}%0A%0A` +
+                `👤 Cashier: ${cookies.auth?.username || "Staff"}`;
+              window.open(`https://wa.me/?text=${summary}`, "_blank");
+            }} fullWidth>
+              📋 WhatsApp Z-Report
+            </Button>
+          </div>
         </div>
       )}
 

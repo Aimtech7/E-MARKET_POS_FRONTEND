@@ -8,6 +8,7 @@ import Button from "../Button";
 import Input from "../Input";
 import { PrintableInvoice } from "../PrintableInvoice";
 import style from "./style.module.css";
+import { playCashBell, announcePayment } from "../../utils/posSounds";
 
 interface ReceiptModalProps {
   cart: Cart;
@@ -280,6 +281,13 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
       }
 
       // Successfully processed invoice
+      playCashBell();
+      if (paymentMethod === "M-Pesa") {
+        announcePayment(finalTotal, "M-Pesa");
+      } else if (paymentMethod === "Paystack") {
+        announcePayment(finalTotal, "Paystack");
+      }
+
       snackbar.onResponse({
         message: "Transaction and Receipt completed successfully.",
         status: 201,
@@ -442,6 +450,17 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
       window.open(`https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${receiptText}`, "_blank");
     } catch (e) {
       snackbar.onResponse({ message: "Failed to load customer phone number.", status: 500 });
+    }
+  };
+
+  const handleSendSMS = () => {
+    const phone = mpesaPhone || "";
+    const msg = `Thank you for shopping at EMMARKET! View your receipt: https://e-market-pos-backend.onrender.com/receipt/${receipt?.receiptNumber}`;
+    if (phone) {
+      window.open(`sms:${phone}?body=${encodeURIComponent(msg)}`, "_self");
+    } else {
+      navigator.clipboard.writeText(msg);
+      snackbar.onResponse({ message: "SMS Receipt link copied to clipboard!", status: 200 });
     }
   };
 
@@ -653,6 +672,9 @@ const ReceiptModal: FC<ReceiptModalProps> = ({ cart, isOpen, onClose, onSuccess 
               </Button>
               <Button onClick={handleWhatsApp} variant="success" className={style.actionBtn}>
                 WhatsApp Receipt
+              </Button>
+              <Button onClick={handleSendSMS} variant="primary" className={style.actionBtn}>
+                📱 Send SMS Link
               </Button>
               <Button onClick={handleDownloadPDF} variant="secondary" className={style.actionBtn}>
                 Download PDF
