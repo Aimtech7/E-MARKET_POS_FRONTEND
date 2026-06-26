@@ -56,14 +56,14 @@ const AuthenticationPage: FC = () => {
               })
               .catch((err) => {
                 setLoading(false);
-                let errorMessage = "Authentication service unavailable";
+                let errorMessage = "Database or authentication unavailable";
                 let errorStatus = 503;
                 if (err.response) {
                   errorMessage = err.response.data?.message || "Login failed";
                   errorStatus = err.response.status || 500;
                 }
                 snack.onResponse({
-                  message: `${errorMessage}. Click 'Work Offline' below to continue.`,
+                  message: errorMessage,
                   status: errorStatus,
                 });
               });
@@ -102,49 +102,15 @@ const AuthenticationPage: FC = () => {
                 </div>
               </div>
 
-              <Button
-                type="submit"
-                variant="primary"
-                size="large"
-                fullWidth
-                loading={loading}
-                className={style.submitBtn}
-              >
-                Sign In
-              </Button>
-
-              <div style={{ marginTop: '20px', padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px dashed #444' }}>
-                <p style={{ margin: '0 0 10px 0', fontSize: '12px', textAlign: 'center', opacity: 0.8 }}>
-                  ⚡ No Internet or Database Disconnected?
-                </p>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    fullWidth
-                    onClick={() => {
-                      const uname = values.username || "cashier";
-                      setCookies("auth", { username: uname, fullName: uname, role: "cashier", admin: false, token: "OFFLINE_" + Date.now() }, { expires: new Date(Date.now() + 7200 * 1000) });
-                      snack.onResponse({ message: "Entered Offline/Local Mode as Cashier", status: 201 });
-                      navigate("/");
-                    }}
-                  >
-                    Work Offline (Cashier)
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="warning"
-                    fullWidth
-                    onClick={() => {
-                      const uname = values.username || "admin";
-                      setCookies("auth", { username: uname, fullName: uname, role: "admin", admin: true, token: "OFFLINE_" + Date.now() }, { expires: new Date(Date.now() + 7200 * 1000) });
-                      snack.onResponse({ message: "Entered Offline/Local Mode as Admin", status: 201 });
-                      navigate("/");
-                    }}
-                  >
-                    Work Offline (Admin)
-                  </Button>
-                </div>
+              <div className={style.actions}>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  fullWidth
+                  disabled={loading}
+                >
+                  {loading ? "Signing in..." : "Sign In"}
+                </Button>
               </div>
             </Form>
           )}
